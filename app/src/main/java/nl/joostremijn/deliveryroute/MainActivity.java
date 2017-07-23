@@ -1,6 +1,7 @@
 package nl.joostremijn.deliveryroute;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private NavAppClient mNavappClient = null;
     private Route mRoute = null;
+    private boolean mDebug = true;
 
     private final ErrorCallback mErrorCallback = new ErrorCallback() {
         @Override
@@ -69,14 +71,50 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (mDebug) {
+            final Button overlayDebugButton = (Button) findViewById(R.id.button_overlay);
+            overlayDebugButton.setVisibility(View.VISIBLE);
+            overlayDebugButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // Code here executes on main thread after user presses button
+                    if (mRoute == null) {
+                        Toast toast = Toast.makeText(MainActivity.this, "no route loaded", Toast.LENGTH_SHORT);
+                        toast.show();
+                        showOverlay(); // for now. TODO: remove this
+                    } else {
+                        showOverlay();
+                    }
+                }
+            });
+        }
+
         // Create the NavAppClient
         createNavAppClient();
 
         Log.d(TAG, "< onCreate");
     }
 
+    private void showOverlay() {
+        // show navapp to test
+        //launchNavApp();
+
+        Handler mHandler = new Handler();
+        mHandler.postDelayed(mLaunchTask, 5000); // start overlay in 2 seconds
+    }
+
+    // will launch the overlay activity
+    private Runnable mLaunchTask = new Runnable() {
+        public void run() {
+            Log.d(TAG, "starting overlay");
+            Intent intent = new Intent(getApplicationContext(), OverlayActivity.class);
+            startActivity(intent);
+        }
+    };
+
     private void loadRoute(String filename) {
+        Log.d(TAG, "> loadRoute");
         mRoute = new Route(filename, mNavappClient);
+        Log.d(TAG, "< loadRoute");
     }
 
     @Override
@@ -111,7 +149,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void launchNavApp() {
+        Log.d(TAG, "> launchNavApp");
         final Intent intent = new Intent(NavAppClient.ACTION_LAUNCH_NAVAPP);
         startActivity(intent);
+        Log.d(TAG, "< launchNavApp");
     }
 }

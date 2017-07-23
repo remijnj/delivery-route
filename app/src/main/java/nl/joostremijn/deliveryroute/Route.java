@@ -1,5 +1,6 @@
 package nl.joostremijn.deliveryroute;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -32,7 +33,18 @@ public class Route {
         mRouteStops = readStopsFromFile(getRouteFileName(filename), mClient);
         mCurrentStopIdx = 0;
     }
+/*
+    public void showOverlay() {
+        // todo : start actity wich shows a small clickable notification in the top left
+        //        on top of the Navigation application. This shows the stop summary, clicking
+        //        will lead to a full detail screen
 
+        Intent intent = new Intent();
+
+        Intent intent = new Intent(this, OverlayActivity.class);
+        startActivity(intent);
+    }
+    */
     /**
      * Plans route to next stop
      */
