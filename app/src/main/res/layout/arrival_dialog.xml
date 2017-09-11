@@ -8,7 +8,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="0dp"
-    tools:context="nl.joostremijn.deliveryroute.OverlayActivity">
+    tools:context="nl.joostremijn.deliveryroute.ArrivalDialog">
 
 
     <TextView

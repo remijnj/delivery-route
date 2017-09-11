@@ -33,18 +33,7 @@ public class Route {
         mRouteStops = readStopsFromFile(getRouteFileName(filename), mClient);
         mCurrentStopIdx = 0;
     }
-/*
-    public void showOverlay() {
-        // todo : start actity wich shows a small clickable notification in the top left
-        //        on top of the Navigation application. This shows the stop summary, clicking
-        //        will lead to a full detail screen
 
-        Intent intent = new Intent();
-
-        Intent intent = new Intent(this, OverlayActivity.class);
-        startActivity(intent);
-    }
-    */
     /**
      * Plans route to next stop
      */
@@ -74,12 +63,23 @@ public class Route {
         Log.d(TAG, "< planRouteToNextStop");
     }
 
+    public void clearRoute() {
+        mClient.getTripManager().cancelTrip(mTrip, mPlanListener);
+    }
+
     private Trip.PlanListener mPlanListener = new Trip.PlanListener() {
         @Override
         public void onTripPlanResult(Trip trip, Trip.PlanResult result) {
             Log.d(TAG, "onTripPlanResult result[" + result + "]");
+
+            // successfully planned
             if (Trip.PlanResult.PLAN_OK.equals(result)) {
                 mTrip = trip;
+            }
+
+            // successfully cancelled
+            if (Trip.PlanResult.TRIP_CANCELLED.equals(result)) {
+                mTrip = null;
             }
         }
     };

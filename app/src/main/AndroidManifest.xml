@@ -15,8 +15,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ArrivalDialog"
+            android:theme="@style/Theme.AppCompat.Transparent" />
 
-        <activity android:name=".OverlayActivity" android:theme="@style/Theme.AppCompat.Transparent"></activity>
+        <service
+            android:name=".RouteService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
