@@ -4,14 +4,23 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
 
 import com.tomtom.navapp.ErrorCallback;
 import com.tomtom.navapp.NavAppClient;
 import com.tomtom.navapp.NavAppError;
+import com.tomtom.navapp.Trip;
 
 /**
  * RouteService
@@ -25,9 +34,11 @@ import com.tomtom.navapp.NavAppError;
 public class RouteService extends Service {
     private static final String TAG = "RouteService";
     private static final int FOREGROUND_ID = 129;
+    private static final int POPUP_DISTANCE = 10000;
     private NavAppClient mNavappClient = null;
     private Route mRoute = null;
-    private boolean mDebug = true;
+    private Trip mTrip;
+    private boolean mOverlayShowing;
 
     public RouteService() {
     }
@@ -40,7 +51,12 @@ public class RouteService extends Service {
         stopForeground(true);
 
         // clear the route
-        mRoute.clearRoute();
+        //
+        // TODO: this does not work, the mNavAppClient.close() call stops the conection before the
+        //       route has been cancelled. We need to move the close to the planlistener or even try to
+        //       cancel the route before the onDestroy() happens somehow
+        //
+        mNavappClient.getTripManager().cancelTrip(mTrip, mPlanListener);
 
         // Close the navapp client connection
         mNavappClient.close();
@@ -72,10 +88,7 @@ public class RouteService extends Service {
         loadRoute("route.csv");
 
         // plan the route to the next stop in the list
-        mRoute.planRouteToNextStop();
-
-        // TODO: watch for ETA changes (we want to show an overlay when we get close to a stop)
-
+        mRoute.planRouteToNextStop(mPlanListener);
 
         Log.d(TAG, "< onStartCommand");
         // We want this service to continue running until it is explicitly
@@ -114,4 +127,105 @@ public class RouteService extends Service {
         mRoute = new Route(filename, mNavappClient);
         Log.d(TAG, "< loadRoute");
     }
+
+    private Trip.PlanListener mPlanListener = new Trip.PlanListener() {
+        @Override
+        public void onTripPlanResult(Trip trip, Trip.PlanResult result) {
+            Log.d(TAG, "onTripPlanResult result[" + result + "]");
+
+            // successfully planned
+            if (Trip.PlanResult.PLAN_OK.equals(result)) {
+                mTrip = trip;
+
+                // Watch for ETA changes (we want to show an overlay when we get close to a stop)
+                mNavappClient.getTripManager().registerTripProgressListener(mProgressListener);
+            }
+
+            // successfully cancelled
+            if (Trip.PlanResult.TRIP_CANCELLED.equals(result)) {
+                mTrip = null;
+            }
+        }
+    };
+
+    private Trip.ProgressListener mProgressListener = new Trip.ProgressListener() {
+        @Override
+        public void onTripArrival(Trip trip) {
+            Log.d(TAG, "> onTripArrival");
+            Log.d(TAG, "< onTripArrival");
+        }
+
+        @Override
+        public void onTripProgress(Trip trip, long eta, int distanceRemaining) {
+            Log.d(TAG, "> onTripProgress");
+            Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters");
+
+            // do not show overlay if overlay is already showing or if MainActivity is in the front
+
+            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible() &&  distanceRemaining < POPUP_DISTANCE) {
+                showOverlay();
+            }
+
+            Log.d(TAG, "< onTripProgress");
+
+        }
+    };
+
+    private void showOverlay() {
+        Log.d(TAG, "> showOverlay");
+
+        final WindowManager wm = (WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager.LayoutParams wmParams = wmParams = new WindowManager.LayoutParams();
+        wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        wmParams.format = PixelFormat.RGBA_8888;
+        wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        wmParams.gravity = Gravity.LEFT | Gravity.TOP;
+
+        LayoutInflater mInflater = LayoutInflater.from(this);
+        final View floatDialogView = mInflater.inflate(R.layout.arrival_dialog, null);
+
+        RouteStop stop = mRoute.getCurrentStop();
+        final String stopName = stop.getName();
+        final String stopAddress = stop.getAddress();
+        final String stopExtra = stop.getExra();
+
+        TextView arrival_text = (TextView)floatDialogView.findViewById(R.id.arrival_text);
+        arrival_text.setText("text set by RouteService class\nNew Line\nThird line");
+        
+        floatDialogView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "> onClick");
+
+                // Dismiss this view
+                wm.removeView(floatDialogView);
+                mOverlayShowing = false;
+
+                // Start the detail view
+                String stopString = "Next stop:";
+                if (stopName != null) {
+                    stopString += "\n" + stopName;
+                }
+                if (stopAddress != null) {
+                    stopString += "\n" + stopAddress;
+                }
+                if (stopExtra != null) {
+                    stopString += "\n" + stopExtra;
+                }
+                Intent intent = new Intent(RouteService.this, MainActivity.class);
+                intent.putExtra(MainActivity.EXTRA_STOP, stopString);
+                startActivity(intent);
+
+                Log.d(TAG, "< onClick");
+            }
+        });
+
+        wm.addView(floatDialogView, wmParams);
+        mOverlayShowing = true;
+
+        Log.d(TAG, "< showOverlay");
+    }
+
 }

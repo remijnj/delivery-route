@@ -13,7 +13,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -29,19 +29,27 @@
                 android:id="@+id/button_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start" />
+                android:text="Start route" />
 
             <Button
                 android:id="@+id/button_stop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Stop" />
+                android:text="Cancel route" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/button_overlay"
+            android:id="@+id/button_next_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Show overlay" />
+            android:text="Next Stop" />
+
+        <TextView
+            android:id="@+id/text_stop"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="32sp"
+            android:text="" />
     </LinearLayout>
 </RelativeLayout>

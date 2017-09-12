@@ -1,23 +1,19 @@
 package nl.joostremijn.deliveryroute;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.tomtom.navapp.ErrorCallback;
 import com.tomtom.navapp.NavAppClient;
-import com.tomtom.navapp.NavAppError;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
+    public static final String EXTRA_STOP = "stop";
+    private TextView mStopText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
                 // start the route service, this loads the route and plans to the first stop
                 Intent intent = new Intent(MainActivity.this, RouteService.class);
                 startService(intent);
+                launchNavApp();
             }
         });
 
@@ -49,18 +46,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mStopText = (TextView) findViewById(R.id.text_stop);
+
+        Intent intent = getIntent();
+        handleStop(intent);
+
         Log.d(TAG, "< onCreate");
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // set activity state in application, we use this again later in the RouteService
+        DeliveryApplication.activityPaused();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // set activity state in application, we use this again later in the RouteService
+        DeliveryApplication.activityResumed();
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        handleStop(intent);
+    }
 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "> onDestroy");
+        super.onDestroy();
 
         Intent intent = new Intent(MainActivity.this, RouteService.class);
         stopService(intent);
 
         Log.d(TAG, "< onDestroy");
+    }
+
+    private void handleStop(Intent intent) {
+        String stop = intent.getStringExtra(EXTRA_STOP);
+        if (stop != null) {
+            mStopText.setText(stop);
+        }
     }
 
     private void launchNavApp() {

@@ -1,9 +1,7 @@
 package nl.joostremijn.deliveryroute;
 
-import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.tomtom.navapp.NavAppClient;
 import com.tomtom.navapp.Routeable;
@@ -26,7 +24,6 @@ public class Route {
     private NavAppClient mClient;
     private RouteStop mCurrentStop = null;
     private int mCurrentStopIdx = -1;
-    private Trip mTrip = null;
 
     public Route(String filename, NavAppClient client) {
         mClient = client;
@@ -37,7 +34,7 @@ public class Route {
     /**
      * Plans route to next stop
      */
-    public void planRouteToNextStop() {
+    public void planRouteToNextStop(Trip.PlanListener planListener) {
         Log.d(TAG, "> planRouteToNextStop");
         if (mRouteStops == null) {
             Log.w(TAG, "planRouteToNextStop(): no route loaded");
@@ -58,31 +55,27 @@ public class Route {
         Log.d(TAG, "\taddress=[" + dest.getAddress() + "]");
         Log.d(TAG, "\tname=[" + mCurrentStop.getName() + "]");
 
-        mClient.getTripManager().planTrip(dest, mPlanListener);
+        mClient.getTripManager().planTrip(dest, planListener);
 
         Log.d(TAG, "< planRouteToNextStop");
     }
 
-    public void clearRoute() {
-        mClient.getTripManager().cancelTrip(mTrip, mPlanListener);
-    }
-
-    private Trip.PlanListener mPlanListener = new Trip.PlanListener() {
-        @Override
-        public void onTripPlanResult(Trip trip, Trip.PlanResult result) {
-            Log.d(TAG, "onTripPlanResult result[" + result + "]");
-
-            // successfully planned
-            if (Trip.PlanResult.PLAN_OK.equals(result)) {
-                mTrip = trip;
-            }
-
-            // successfully cancelled
-            if (Trip.PlanResult.TRIP_CANCELLED.equals(result)) {
-                mTrip = null;
-            }
+    /**
+     * Gets the current stop information
+     *
+     * @return : null if no route is loaded or an empty route is loaded.
+     */
+    public RouteStop getCurrentStop() {
+        if (mRouteStops == null) {
+            Log.w(TAG, "planRouteToNextStop(): no route loaded");
+            return null;
+        } else if (mRouteStops.size() == 0) {
+            Log.w(TAG, "planRouteToNextStop(): empty route loaded");
+            return null;
         }
-    };
+
+        return mRouteStops.get(mCurrentStopIdx);
+    }
 
     /**
      * Simple method for reading a Route from a text file.
@@ -133,12 +126,25 @@ public class Route {
                     // Each array contains integer elements representing latitude
                     // and longitude expressed in microdegree
                     Routeable routeable = client.makeRouteable(lat, lon);
-                    stop.mStop = routeable;
+                    stop.setRouteable(routeable);
                 }
 
+                // name
                 if (splitline.length >= 3) {
                     final String name = splitline[2];
-                    stop.mName = name;
+                    stop.setName(name);
+                }
+
+                // address string
+                if (splitline.length >= 4) {
+                    final String address = splitline[3];
+                    stop.setAddress(address);
+                }
+
+                // extra info
+                if (splitline.length >= 5) {
+                    final String extra = splitline[4];
+                    stop.setExtra(extra);
                 }
 
                 stops.add(stop);
