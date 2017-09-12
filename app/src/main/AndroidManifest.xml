@@ -16,16 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ArrivalDialog"
-            android:theme="@style/Theme.AppCompat.Transparent" />
 
         <service
             android:name=".RouteService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="false" />
     </application>
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> // needed for the overlay window
-
 </manifest>
