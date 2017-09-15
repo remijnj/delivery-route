@@ -16,4 +16,25 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
+
+    <style name="BlackButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorButtonNormal">@color/black</item>
+    </style>
+
+    <style name="RedButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorButtonNormal">@color/red</item>
+    </style>
+
+    <style name="BlueButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorButtonNormal">@color/blue</item>
+    </style>
+
+    <style name="GreenButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorButtonNormal">@color/green</item>
+    </style>
+
 </resources>

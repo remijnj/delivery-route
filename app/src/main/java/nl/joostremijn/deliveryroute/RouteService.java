@@ -20,6 +20,7 @@ import android.content.Intent;
 import com.tomtom.navapp.ErrorCallback;
 import com.tomtom.navapp.NavAppClient;
 import com.tomtom.navapp.NavAppError;
+import com.tomtom.navapp.Routeable;
 import com.tomtom.navapp.Trip;
 
 /**
@@ -36,33 +37,12 @@ public class RouteService extends Service {
     private static final int FOREGROUND_ID = 129;
     private static final int POPUP_DISTANCE = 10000;
     private NavAppClient mNavappClient = null;
-    private Route mRoute = null;
     private Trip mTrip;
     private boolean mOverlayShowing;
+    public static final String ROUTESTOP = "ROUTESTOP";
+    private RouteStop mStop;
 
     public RouteService() {
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "> onDestroy");
-
-        // Cancel the foreground service / notification.
-        stopForeground(true);
-
-        // clear the route
-        //
-        // TODO: this does not work, the mNavAppClient.close() call stops the conection before the
-        //       route has been cancelled. We need to move the close to the planlistener or even try to
-        //       cancel the route before the onDestroy() happens somehow
-        //
-        mNavappClient.getTripManager().cancelTrip(mTrip, mPlanListener);
-
-        // Close the navapp client connection
-        mNavappClient.close();
-        mNavappClient = null;
-
-        Log.d(TAG, "< onDestroy");
     }
 
     @Override
@@ -71,8 +51,8 @@ public class RouteService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "> onStartCommand");
+    public void onCreate() {
+        Log.d(TAG, "> onCreate");
 
         // start as a foreground service so this keeps running
         Notification notification = new Notification.Builder(this)
@@ -84,16 +64,67 @@ public class RouteService extends Service {
         // Create the NavAppClient
         createNavAppClient();
 
-        // Load the route
-        loadRoute("route.csv");
+        Log.d(TAG, "< onCreate");
+    }
 
-        // plan the route to the next stop in the list
-        mRoute.planRouteToNextStop(mPlanListener);
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "> onDestroy");
+
+        // Cancel the foreground service / notification.
+        stopForeground(true);
+
+        // clear the route
+        //
+        // TODO: this does not always work, the mNavAppClient.close() call stops the conection before the
+        //       route has been cancelled. We need to move the close to the planlistener or even try to
+        //       cancel the route before the onDestroy() happens somehow.
+        //
+        mNavappClient.getTripManager().cancelTrip(mTrip, mPlanListener);
+
+        // Close the navapp client connection
+        mNavappClient.close();
+        mNavappClient = null;
+
+        Log.d(TAG, "< onDestroy");
+    }
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "> onStartCommand");
+
+        if (intent != null) {
+            mStop = (RouteStop) intent.getSerializableExtra(ROUTESTOP);
+        }
+
+        if (mStop != null) {
+            // plan the route to the next stop in the list
+            planRouteToStop(mStop, mPlanListener);
+        }
 
         Log.d(TAG, "< onStartCommand");
+
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
+    }
+
+    /**
+     * Plans route to next stop
+     */
+    public void planRouteToStop(RouteStop stop, Trip.PlanListener planListener) {
+        double lat = stop.getLatitude();
+        double lon = stop.getLongitude();
+        Routeable dest = mNavappClient.makeRouteable(lat, lon);
+
+        Log.d(TAG, "planning route to [" + dest.getLatitude() + ", " + dest.getLongitude() + "]");
+        Log.d(TAG, "\taddress=[" + dest.getAddress() + "]");
+        Log.d(TAG, "\tname=[" + stop.getName() + "]");
+
+        mNavappClient.getTripManager().planTrip(dest, planListener);
+
+        Log.d(TAG, "< planRouteToNextStop");
     }
 
     public boolean createNavAppClient() {
@@ -121,12 +152,6 @@ public class RouteService extends Service {
             mNavappClient = null;
         }
     };
-
-    private void loadRoute(String filename) {
-        Log.d(TAG, "> loadRoute");
-        mRoute = new Route(filename, mNavappClient);
-        Log.d(TAG, "< loadRoute");
-    }
 
     private Trip.PlanListener mPlanListener = new Trip.PlanListener() {
         @Override
@@ -175,7 +200,7 @@ public class RouteService extends Service {
         Log.d(TAG, "> showOverlay");
 
         final WindowManager wm = (WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams wmParams = wmParams = new WindowManager.LayoutParams();
+        WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
         wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         wmParams.format = PixelFormat.RGBA_8888;
         wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -186,14 +211,25 @@ public class RouteService extends Service {
         LayoutInflater mInflater = LayoutInflater.from(this);
         final View floatDialogView = mInflater.inflate(R.layout.arrival_dialog, null);
 
-        RouteStop stop = mRoute.getCurrentStop();
-        final String stopName = stop.getName();
-        final String stopAddress = stop.getAddress();
-        final String stopExtra = stop.getExra();
+        final String stopName = mStop.getName();
+        final String stopStreet = mStop.getStreet();
+        final String stopHouseNumber = mStop.getHouseNumber();
+        String arrivalString = "";
 
         TextView arrival_text = (TextView)floatDialogView.findViewById(R.id.arrival_text);
-        arrival_text.setText("text set by RouteService class\nNew Line\nThird line");
-        
+        if (stopName != null && !stopName.isEmpty()) {
+            arrivalString = stopName + "\n";
+        }
+        if (stopStreet != null && !stopStreet.isEmpty()) {
+            arrivalString += stopStreet;
+        }
+        arrival_text.setText(arrivalString);
+
+        TextView arrival_text_housenumber = (TextView)floatDialogView.findViewById(R.id.arrival_text_housenumber);
+        if (stopHouseNumber != null) {
+            arrival_text_housenumber.setText(stopHouseNumber);
+        }
+
         floatDialogView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,18 +240,8 @@ public class RouteService extends Service {
                 mOverlayShowing = false;
 
                 // Start the detail view
-                String stopString = "Next stop:";
-                if (stopName != null) {
-                    stopString += "\n" + stopName;
-                }
-                if (stopAddress != null) {
-                    stopString += "\n" + stopAddress;
-                }
-                if (stopExtra != null) {
-                    stopString += "\n" + stopExtra;
-                }
                 Intent intent = new Intent(RouteService.this, MainActivity.class);
-                intent.putExtra(MainActivity.EXTRA_STOP, stopString);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
 
                 Log.d(TAG, "< onClick");
