@@ -4,18 +4,17 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
-import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Intent;
 
 import com.tomtom.navapp.ErrorCallback;
 import com.tomtom.navapp.NavAppClient;
@@ -25,17 +24,15 @@ import com.tomtom.navapp.Trip;
 
 /**
  * RouteService
- *
+ * <p>
  * This service is meant to plan the route to the next stop and watch the ETA.
- *
+ * <p>
  * When we get close to the stop we want to show an overlay with some more
  * delivery information.
- *
  */
 public class RouteService extends Service {
     private static final String TAG = "RouteService";
     private static final int FOREGROUND_ID = 129;
-    private static final int POPUP_DISTANCE = 10000;
     private NavAppClient mNavappClient = null;
     private Trip mTrip;
     private boolean mOverlayShowing;
@@ -57,7 +54,7 @@ public class RouteService extends Service {
         // start as a foreground service so this keeps running
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("Delivery Route")
-                .setSmallIcon(R.drawable.ic_local_shipping_black_24dp)
+                .setSmallIcon(R.drawable.ic_local_shipping_white_24dp)
                 .build();
         startForeground(FOREGROUND_ID, notification);
 
@@ -183,11 +180,16 @@ public class RouteService extends Service {
         @Override
         public void onTripProgress(Trip trip, long eta, int distanceRemaining) {
             Log.d(TAG, "> onTripProgress");
-            Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters");
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
+
+            String notificationDistanceMeters = preferences.getString("notification_distance", "500");
+            Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
+
+            int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
 
             // do not show overlay if overlay is already showing or if MainActivity is in the front
-
-            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible() &&  distanceRemaining < POPUP_DISTANCE) {
+            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible() && distanceRemaining < notificationDistanceMetersInt) {
                 showOverlay();
             }
 
@@ -199,7 +201,7 @@ public class RouteService extends Service {
     private void showOverlay() {
         Log.d(TAG, "> showOverlay");
 
-        final WindowManager wm = (WindowManager)getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
         wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         wmParams.format = PixelFormat.RGBA_8888;
@@ -216,7 +218,7 @@ public class RouteService extends Service {
         final String stopHouseNumber = mStop.getHouseNumber();
         String arrivalString = "";
 
-        TextView arrival_text = (TextView)floatDialogView.findViewById(R.id.arrival_text);
+        TextView arrival_text = (TextView) floatDialogView.findViewById(R.id.arrival_text);
         if (stopName != null && !stopName.isEmpty()) {
             arrivalString = stopName + "\n";
         }
@@ -225,7 +227,7 @@ public class RouteService extends Service {
         }
         arrival_text.setText(arrivalString);
 
-        TextView arrival_text_housenumber = (TextView)floatDialogView.findViewById(R.id.arrival_text_housenumber);
+        TextView arrival_text_housenumber = (TextView) floatDialogView.findViewById(R.id.arrival_text_housenumber);
         if (stopHouseNumber != null) {
             arrival_text_housenumber.setText(stopHouseNumber);
         }

@@ -8,6 +8,7 @@ import android.app.Application;
 
 public class DeliveryApplication extends Application {
     private static boolean mActivityVisible;
+
     public static boolean isActivityVisible() {
         return mActivityVisible;
     }

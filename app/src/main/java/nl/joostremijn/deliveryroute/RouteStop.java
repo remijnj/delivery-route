@@ -18,6 +18,7 @@ public class RouteStop implements Serializable {
     public void setName(String name) {
         mName = name;
     }
+
     public String getName() {
         return mName;
     }
@@ -25,6 +26,7 @@ public class RouteStop implements Serializable {
     public void setStreet(String street) {
         mStreet = street;
     }
+
     public String getStreet() {
         return mStreet;
     }
@@ -32,18 +34,33 @@ public class RouteStop implements Serializable {
     public void setHouseNumber(String housenumber) {
         mHouseNumber = housenumber;
     }
-    public String getHouseNumber() { return mHouseNumber; }
+
+    public String getHouseNumber() {
+        return mHouseNumber;
+    }
 
     public void setExtra(String name) {
         mExtra = name;
     }
+
     public String getExra() {
         return mExtra;
     }
 
-    public double getLatitude() { return mLatitude; }
-    public void setLatitude(double lat) { mLatitude = lat; }
-    public double getLongitude() { return mLongitude; }
-    public void setLongitude(double lon) { mLongitude = lon; }
+    public double getLatitude() {
+        return mLatitude;
+    }
+
+    public void setLatitude(double lat) {
+        mLatitude = lat;
+    }
+
+    public double getLongitude() {
+        return mLongitude;
+    }
+
+    public void setLongitude(double lon) {
+        mLongitude = lon;
+    }
 }
 

@@ -2,10 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="nl.joostremijn.deliveryroute">
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    // needed for the overlay window
     <application
         android:name=".DeliveryApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_local_shipping_white_48dp"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -23,7 +25,10 @@
             android:name=".RouteService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
     </application>
 
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> // needed for the overlay window
 </manifest>

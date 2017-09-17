@@ -11,39 +11,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by joost on 23-7-17.
+ * Route
+ * <p>
+ * This class holds the stops on the route and can load the route.csv file
  */
 
 public class Route {
     private final static String TAG = "Route";
-    private List<RouteStop> mRouteStops = null;
-    private RouteStop mCurrentStop = null;
-    private int mCurrentStopIdx = -1;
+    private List<RouteStop> mRouteStops;
+    private int mCurrentStopIdx;
 
     public Route(String filename) {
         mRouteStops = readStopsFromFile(getRouteFileName(filename));
-        mCurrentStopIdx = 0;
+        mCurrentStopIdx = -1;
+    }
+
+    public Route(String filename, int index) {
+        mRouteStops = readStopsFromFile(getRouteFileName(filename));
+        mCurrentStopIdx = index;
     }
 
     public RouteStop nextStop() {
         Log.d(TAG, "> nextStop");
-        if (mRouteStops == null) {
-            Log.w(TAG, "planRouteToNextStop(): no route loaded");
-            return null;
-        } else if (mRouteStops.size() == 0) {
-            Log.w(TAG, "planRouteToNextStop(): empty route loaded");
-            return null;
-        } else if (mRouteStops.size() < mCurrentStopIdx + 1) {
+
+        if (mRouteStops != null && mRouteStops.size() < (mCurrentStopIdx + 1)) {
             Log.w(TAG, "planRouteToNextStop(): already at last stop");
             return null;
         }
 
-        mCurrentStop = mRouteStops.get(mCurrentStopIdx);
         mCurrentStopIdx++;
+        RouteStop currentStop = getCurrentStop();
 
         Log.d(TAG, "< nextStop");
 
-        return mCurrentStop;
+        return currentStop;
+    }
+
+    public RouteStop prevStop() {
+        Log.d(TAG, "> prevStop");
+
+        if ((mCurrentStopIdx - 1) < 0) {
+            Log.w(TAG, "planRouteToNextStop(): already at first stop");
+            return null;
+        }
+
+        mCurrentStopIdx--;
+        RouteStop currentStop = getCurrentStop();
+
+        Log.d(TAG, "< prevStop");
+
+        return currentStop;
     }
 
     /**
@@ -52,7 +69,25 @@ public class Route {
      * @return : null if no route is loaded or an empty route is loaded.
      */
     public RouteStop getCurrentStop() {
-        return mCurrentStop;
+        if (mRouteStops == null) {
+            Log.w(TAG, "planRouteToNextStop(): no route loaded");
+            return null;
+        } else if (mRouteStops.size() == 0) {
+            Log.w(TAG, "planRouteToNextStop(): empty route loaded");
+            return null;
+        }
+        return mRouteStops.get(mCurrentStopIdx);
+    }
+
+    /**
+     * Gets the current stop index, this can be used to restore state (reload + jump to this index)
+     */
+    public int getCurrentStopIndex() {
+        return mCurrentStopIdx;
+    }
+
+    public void goToIndex(int index) {
+        mCurrentStopIdx = index;
     }
 
     /**
@@ -160,8 +195,6 @@ public class Route {
      */
     private String getRouteFileName(String filename) {
         final String filePath = Environment.getExternalStorageDirectory().getPath();
-        //final String fileName = "route.csv";
-
         return filePath + File.separator + filename;
     }
 }
