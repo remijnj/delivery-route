@@ -7,6 +7,9 @@ import android.app.Application;
  */
 
 public class DeliveryApplication extends Application {
+    public Route mRoute = null;
+    public int mRouteCurrentIdx = 0;
+
     private static boolean mActivityVisible;
 
     public static boolean isActivityVisible() {

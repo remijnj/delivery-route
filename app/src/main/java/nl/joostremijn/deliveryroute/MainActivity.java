@@ -14,43 +14,31 @@ import com.tomtom.navapp.NavAppClient;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    public static final String EXTRA_STOP = "stop";
-    private static final String ROUTE_FILENAME = "ROUTE_FILENAME";
-    private static final String ROUTE_CURIDX = "ROUTE_CURIDX";
     private TextView mStopText;
     private Button mPrevStopButton;
+    private Button mStartButton;
     private Button mNextStopButton;
-    private Route mRoute = null;
     private String mRouteFilename = "route.csv";
-    private int mRouteCurrentIdx = 0;
+    DeliveryApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "> onCreate");
 
-        // Check whether we're recreating a previously destroyed instance
-        if (savedInstanceState != null) {
-            // Restore value of members from saved state
-            mRouteFilename = savedInstanceState.getString(ROUTE_FILENAME);
-            mRouteCurrentIdx = savedInstanceState.getInt(ROUTE_CURIDX);
-
-            Log.d(TAG, "restored instance state: file=" + mRouteFilename + " idx=" + mRouteCurrentIdx);
-        }
+        mApplication = (DeliveryApplication) getApplication();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Button startButton = (Button) findViewById(R.id.button_start);
-        startButton.setOnClickListener(new View.OnClickListener() {
+        mStartButton = (Button) findViewById(R.id.button_start);
+        mStartButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
 
                 // start the route service, this loads the route and plans to the first stop
                 loadRoute(mRouteFilename);
-                RouteStop stop = mRoute.nextStop();
-                setStopText();
-                mNextStopButton.setVisibility(View.VISIBLE);
-                mPrevStopButton.setVisibility(View.VISIBLE);
+                RouteStop stop = mApplication.mRoute.nextStop();
+                updateUI();
 
                 Intent intent = new Intent(MainActivity.this, RouteService.class);
                 intent.putExtra(RouteService.ROUTESTOP, stop);
@@ -59,24 +47,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*
-        final Button stopButton = (Button) findViewById(R.id.button_stop);
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Code here executes on main thread after user presses button
-                clearRoute();
-            }
-        });
-        */
-
         mPrevStopButton = (Button) findViewById(R.id.button_prev_stop);
         mPrevStopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
 
-                RouteStop stop = mRoute.prevStop();
+                RouteStop stop = mApplication.mRoute.prevStop();
                 if (stop != null) {
-                    setStopText();
+                    updateUI();
 
                     // tell route service to plan route to previous stop
                     Intent intent = new Intent(MainActivity.this, RouteService.class);
@@ -86,16 +64,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        mPrevStopButton.setVisibility(View.INVISIBLE);
 
         mNextStopButton = (Button) findViewById(R.id.button_next_stop);
         mNextStopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses button
 
-                RouteStop stop = mRoute.nextStop();
+                RouteStop stop = mApplication.mRoute.nextStop();
                 if (stop != null) {
-                    setStopText();
+                    updateUI();
 
                     // tell route service to plan route to next stop
                     Intent intent = new Intent(MainActivity.this, RouteService.class);
@@ -105,25 +82,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        mNextStopButton.setVisibility(View.INVISIBLE);
 
         mStopText = (TextView) findViewById(R.id.text_stop);
 
-        //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(myToolbar);
+        updateUI();
 
         Log.d(TAG, "< onCreate");
+    }
+
+    private void updateUI() {
+        setStopText();
+
+        if (mApplication.mRoute == null) {
+            mNextStopButton.setVisibility(View.INVISIBLE);
+            mPrevStopButton.setVisibility(View.INVISIBLE);
+            mStartButton.setVisibility(View.VISIBLE);
+        } else {
+            mNextStopButton.setVisibility(View.VISIBLE);
+            mPrevStopButton.setVisibility(View.VISIBLE);
+            mStartButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void clearRoute() {
         // stop the route service
         Intent intent = new Intent(MainActivity.this, RouteService.class);
         stopService(intent);
-        mRoute = null;
+        mApplication.mRoute = null;
 
-        mNextStopButton.setVisibility(View.INVISIBLE);
-        mPrevStopButton.setVisibility(View.INVISIBLE);
-        setStopText();
+        updateUI();
     }
 
     @Override
@@ -143,24 +130,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.d(TAG, "> onSaveInstanceState");
-        // Save the route filename + index
-        savedInstanceState.putString(ROUTE_FILENAME, mRouteFilename);
-        savedInstanceState.putInt(ROUTE_CURIDX, mRouteCurrentIdx);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-        Log.d(TAG, "< onSaveInstanceState");
-    }
-
-    @Override
     protected void onDestroy() {
         Log.d(TAG, "> onDestroy");
         super.onDestroy();
-
-        //Intent intent = new Intent(MainActivity.this, RouteService.class);
-        //stopService(intent);
 
         Log.d(TAG, "< onDestroy");
     }
@@ -190,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -203,14 +174,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadRoute(String filename) {
         Log.d(TAG, "> loadRoute");
-        mRoute = new Route(filename);
+        mApplication.mRoute = new Route(filename);
         Log.d(TAG, "< loadRoute");
     }
 
     private void setStopText() {
         RouteStop stop = null;
-        if (mRoute != null) {
-            stop = mRoute.getCurrentStop();
+        if (mApplication.mRoute != null) {
+            stop = mApplication.mRoute.getCurrentStop();
         }
         if (stop == null) {
             mStopText.setText("");
@@ -222,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         final String stopHouseNumber = stop.getHouseNumber();
         final String stopExtra = stop.getExra();
 
-        String stopString = "Next stop:";
+        String stopString = getString(R.string.current_stop);
         if (stopName != null) {
             stopString += "\n" + stopName;
         }
