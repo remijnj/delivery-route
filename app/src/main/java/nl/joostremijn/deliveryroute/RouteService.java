@@ -110,7 +110,7 @@ public class RouteService extends Service {
     /**
      * Plans route to next stop
      */
-    public void planRouteToStop(RouteStop stop, Trip.PlanListener planListener) {
+    private void planRouteToStop(RouteStop stop, Trip.PlanListener planListener) {
         double lat = stop.getLatitude();
         double lon = stop.getLongitude();
         Routeable dest = mNavappClient.makeRouteable(lat, lon);
@@ -124,7 +124,7 @@ public class RouteService extends Service {
         Log.d(TAG, "< planRouteToNextStop");
     }
 
-    public boolean createNavAppClient() {
+    private boolean createNavAppClient() {
         Log.d(TAG, "> createNavAppClient");
         if (mNavappClient == null) {
             // Create the NavAppClient
@@ -255,5 +255,4 @@ public class RouteService extends Service {
 
         Log.d(TAG, "< showOverlay");
     }
-
 }

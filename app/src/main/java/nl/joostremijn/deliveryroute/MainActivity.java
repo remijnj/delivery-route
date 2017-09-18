@@ -90,29 +90,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "< onCreate");
     }
 
-    private void updateUI() {
-        setStopText();
-
-        if (mApplication.mRoute == null) {
-            mNextStopButton.setVisibility(View.INVISIBLE);
-            mPrevStopButton.setVisibility(View.INVISIBLE);
-            mStartButton.setVisibility(View.VISIBLE);
-        } else {
-            mNextStopButton.setVisibility(View.VISIBLE);
-            mPrevStopButton.setVisibility(View.VISIBLE);
-            mStartButton.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void clearRoute() {
-        // stop the route service
-        Intent intent = new Intent(MainActivity.this, RouteService.class);
-        stopService(intent);
-        mApplication.mRoute = null;
-
-        updateUI();
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -178,6 +155,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "< loadRoute");
     }
 
+    private void clearRoute() {
+        // stop the route service
+        Intent intent = new Intent(MainActivity.this, RouteService.class);
+        stopService(intent);
+        mApplication.mRoute = null;
+
+        updateUI();
+    }
+
     private void setStopText() {
         RouteStop stop = null;
         if (mApplication.mRoute != null) {
@@ -207,5 +193,19 @@ public class MainActivity extends AppCompatActivity {
             stopString += "\n" + stopExtra;
         }
         mStopText.setText(stopString);
+    }
+
+    private void updateUI() {
+        setStopText();
+
+        if (mApplication.mRoute == null) {
+            mNextStopButton.setVisibility(View.INVISIBLE);
+            mPrevStopButton.setVisibility(View.INVISIBLE);
+            mStartButton.setVisibility(View.VISIBLE);
+        } else {
+            mNextStopButton.setVisibility(View.VISIBLE);
+            mPrevStopButton.setVisibility(View.VISIBLE);
+            mStartButton.setVisibility(View.INVISIBLE);
+        }
     }
 }
