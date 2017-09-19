@@ -34,7 +34,7 @@ public class Route {
     public RouteStop nextStop() {
         Log.d(TAG, "> nextStop");
 
-        if (mRouteStops != null && mRouteStops.size() < (mCurrentStopIdx + 1)) {
+        if (mRouteStops != null && mRouteStops.size() <= (mCurrentStopIdx + 1)) {
             Log.w(TAG, "planRouteToNextStop(): already at last stop");
             return null;
         }
