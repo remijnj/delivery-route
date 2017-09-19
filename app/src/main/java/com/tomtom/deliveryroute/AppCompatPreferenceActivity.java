@@ -1,4 +1,4 @@
-package nl.joostremijn.deliveryroute;
+package com.tomtom.deliveryroute;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package nl.joostremijn.deliveryroute;
+package com.tomtom.deliveryroute;
 
 import android.app.Notification;
 import android.app.Service;
