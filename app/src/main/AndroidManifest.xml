@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tomtom.deliveryroute">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- needed for reading route.csv -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- needed for the overlay window -->
 
     <application
