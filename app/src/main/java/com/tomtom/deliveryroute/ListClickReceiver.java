@@ -1,5 +1,6 @@
 package com.tomtom.deliveryroute;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,9 +17,13 @@ public class ListClickReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int id = intent.getIntExtra(EXTRA_ITEMID, -1);
-
         Log.d(TAG, "id=" + id);
 
-        // TODO: go to stop screen from here
+        // Start the detail view
+        Intent stopActivityIntent = new Intent(context, StopActivity.class);
+        stopActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        stopActivityIntent.putExtra(StopFragment.ROUTESTOP_ID, id);
+
+        context.startActivity(stopActivityIntent);
     }
 }

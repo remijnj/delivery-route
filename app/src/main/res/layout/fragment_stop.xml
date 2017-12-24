@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="com.tomtom.deliveryroute.StopFragment">
+
+    <!-- large checkbox -->
+    <CheckBox
+        android:id="@+id/done_checkbox"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:button="@null"
+        android:background="?android:attr/listChoiceIndicatorMultiple" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <!-- The adress + instructions -->
+        <TextView
+            android:id="@+id/text_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text=""
+            android:textSize="35sp" />
+
+        <!-- The drive button to trigger planning a route -->
+        <Button
+            android:id="@+id/drive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:text="@string/button_drive"
+            android:textSize="30sp"
+            android:theme="@style/BlueButton" />
+    </RelativeLayout>
+</LinearLayout>

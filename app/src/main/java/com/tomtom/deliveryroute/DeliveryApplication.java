@@ -11,7 +11,6 @@ public class DeliveryApplication extends Application {
     private static final String TAG = "DeliveryApplication";
     private static String ROUTE_FILENAME = "route.csv";
     public Route mRoute = null;
-    public int mRouteCurrentIdx = 0;
 
     private static boolean mActivityVisible;
 

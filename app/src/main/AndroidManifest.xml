@@ -3,17 +3,18 @@
     package="com.tomtom.deliveryroute">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- needed for reading route.csv -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- needed for the overlay window -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <!-- needed for the overlay window -->
     <application
-        android:name="com.tomtom.deliveryroute.DeliveryApplication"
+        android:name=".DeliveryApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_local_shipping_white_48dp"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.tomtom.deliveryroute.MainActivity"
+            android:name=".MainActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,29 +24,32 @@
         </activity>
 
         <service
-            android:name="com.tomtom.deliveryroute.RouteService"
+            android:name=".RouteService"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name="com.tomtom.deliveryroute.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
 
-        <receiver android:name="com.tomtom.deliveryroute.ListWidgetProvider" >
+        <receiver android:name=".ListWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider"
+
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/appwidget_info" />
         </receiver>
 
         <service
             android:name=".ListWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"
-            android:exported="false" />
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <receiver android:name="com.tomtom.deliveryroute.ListClickReceiver"/>
+        <receiver android:name=".ListClickReceiver" />
 
+        <activity android:name=".StopActivity"></activity>
     </application>
 
 </manifest>

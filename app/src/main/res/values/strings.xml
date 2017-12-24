@@ -36,4 +36,6 @@
         <item>10000</item>
         <item>-1</item>
     </string-array>
+
+    <string name="button_drive">Drive</string>
 </resources>

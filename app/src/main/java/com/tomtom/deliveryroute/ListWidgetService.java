@@ -21,7 +21,7 @@ public class ListWidgetService extends RemoteViewsService {
 
         Log.d(TAG, "onGetViewFactory appWidgetId=" + appWidgetId);
 
-        return (new ListViewFactory((DeliveryApplication)this.getApplication(), this.getApplicationContext(), intent));
+        return (new ListViewFactory((DeliveryApplication)getApplication(), this.getApplicationContext(), intent));
     }
 
 }
