@@ -15,6 +15,7 @@
     <string name="pref_about">About</string>
     <string name="pref_notification_distance">Notification distance</string>
     <string-array name="pref_notification_distances_metric">
+        <item>Never</item>
         <item>50 meters</item>
         <item>100 meters</item>
         <item>200 meters</item>
@@ -25,6 +26,7 @@
         <item>Always</item>
     </string-array>
     <string-array name="pref_distance_values_metric">
+        <item>0</item>
         <item>50</item>
         <item>100</item>
         <item>200</item>

@@ -171,6 +171,9 @@ public class RouteService extends Service {
     };
 
     private Trip.ProgressListener mProgressListener = new Trip.ProgressListener() {
+        public static final int NOTIFY_NEVER = 0;
+        public static final int NOTIFY_ALWAYS = -1;
+
         @Override
         public void onTripArrival(Trip trip) {
             Log.d(TAG, "> onTripArrival");
@@ -182,19 +185,22 @@ public class RouteService extends Service {
             //Log.d(TAG, "> onTripProgress");
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
-
             String notificationDistanceMeters = preferences.getString("notification_distance", "500");
-            //Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
-
             int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
 
+            //Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
+            if (notificationDistanceMetersInt == NOTIFY_NEVER) {
+                return;
+            }
+
             // do not show overlay if overlay is already showing or if MainActivity is in the front
-            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible() && distanceRemaining < notificationDistanceMetersInt) {
-                showOverlay();
+            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible()) {
+                if (notificationDistanceMetersInt == NOTIFY_ALWAYS || distanceRemaining < notificationDistanceMetersInt) {
+                    showOverlay();
+                }
             }
 
             //Log.d(TAG, "< onTripProgress");
-
         }
     };
 
