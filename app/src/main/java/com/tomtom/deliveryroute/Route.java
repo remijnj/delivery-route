@@ -90,6 +90,14 @@ public class Route {
         mCurrentStopIdx = index;
     }
 
+    public int size() {
+        return mRouteStops.size();
+    }
+
+    public RouteStop getStop(int index) {
+        return mRouteStops.get(index);
+    }
+
     /**
      * Simple method for reading a Route from a text file.
      * Every line of the file must contain a pair of latitude and longitude values expressed in degree

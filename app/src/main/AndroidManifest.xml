@@ -30,6 +30,22 @@
         <activity
             android:name="com.tomtom.deliveryroute.SettingsActivity"
             android:label="@string/title_activity_settings" />
+
+        <receiver android:name="com.tomtom.deliveryroute.ListWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/appwidget_info" />
+        </receiver>
+
+        <service
+            android:name=".ListWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
+
+        <receiver android:name="com.tomtom.deliveryroute.ListClickReceiver"/>
+
     </application>
 
 </manifest>

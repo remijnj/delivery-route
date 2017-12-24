@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="textbox" type="id" />
+    <item name="listView" type="id" />
+
+    <item name="row_container" type="id" />
+    <item name="row_list_name" type="id" />
+    <item name="row_list_street" type="id" />
+    <item name="row_list_number" type="id" />
+</resources>

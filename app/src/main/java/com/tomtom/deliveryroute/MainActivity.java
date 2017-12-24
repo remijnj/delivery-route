@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
                 // Code here executes on main thread after user presses button
 
                 // start the route service, this loads the route and plans to the first stop
-                loadRoute(mRouteFilename);
+                mApplication.loadRoute(mRouteFilename);
                 RouteStop stop = mApplication.mRoute.nextStop();
                 updateUI();
 
@@ -148,13 +148,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         Log.d(TAG, "< launchNavApp");
     }
-
-    private void loadRoute(String filename) {
-        Log.d(TAG, "> loadRoute");
-        mApplication.mRoute = new Route(filename);
-        Log.d(TAG, "< loadRoute");
-    }
-
+    
     private void clearRoute() {
         // stop the route service
         Intent intent = new Intent(MainActivity.this, RouteService.class);

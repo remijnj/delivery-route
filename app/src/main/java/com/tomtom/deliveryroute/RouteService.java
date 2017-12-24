@@ -179,12 +179,12 @@ public class RouteService extends Service {
 
         @Override
         public void onTripProgress(Trip trip, long eta, int distanceRemaining) {
-            Log.d(TAG, "> onTripProgress");
+            //Log.d(TAG, "> onTripProgress");
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
 
             String notificationDistanceMeters = preferences.getString("notification_distance", "500");
-            Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
+            //Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
 
             int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
 
@@ -193,7 +193,7 @@ public class RouteService extends Service {
                 showOverlay();
             }
 
-            Log.d(TAG, "< onTripProgress");
+            //Log.d(TAG, "< onTripProgress");
 
         }
     };
