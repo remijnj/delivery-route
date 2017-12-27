@@ -1,9 +1,12 @@
-package com.tomtom.deliveryroute;
+package com.tomtom.deliveryroute.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+
+import com.tomtom.deliveryroute.DeliveryApplication;
+import com.tomtom.deliveryroute.R;
 
 public class StopActivity extends AppCompatActivity {
 
@@ -23,5 +26,19 @@ public class StopActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stop);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
 
+        // set activity state in application, we use this again later in the RouteService
+        DeliveryApplication.activityPaused();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // set activity state in application, we use this again later in the RouteService
+        DeliveryApplication.activityResumed();
+    }
 }

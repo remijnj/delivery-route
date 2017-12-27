@@ -1,4 +1,4 @@
-package com.tomtom.deliveryroute;
+package com.tomtom.deliveryroute.ui;
 
 
 import android.content.pm.PackageInfo;
@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+
+import com.tomtom.deliveryroute.R;
 
 import java.util.Locale;
 

@@ -1,4 +1,4 @@
-package com.tomtom.deliveryroute;
+package com.tomtom.deliveryroute.ui;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

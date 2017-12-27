@@ -14,6 +14,7 @@ import com.tomtom.deliveryroute.RouteStop;
 /**
  * This is needed to feed data into the listview on the widget side. This acts like an ArrayAdapter
  * for a regular ListView.
+ *
  */
 public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     private final static String TAG = "ListViewFactory";
@@ -78,7 +79,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public boolean hasStableIds() {
-        return true; // does this have to be false when we don't return elements which are done?
+        return false;
     }
 
     @Override

@@ -18,45 +18,46 @@ public class RouteStop implements Serializable {
     private String mExtra;
     private double mLatitude;
     private double mLongitude;
-
-    public void setName(String name) {
-        mName = name;
-    }
+    private boolean mDone;
 
     public String getName() {
         return mName;
     }
 
-    public void setStreet(String street) {
-        mStreet = street;
+    public void setName(String name) {
+        mName = name;
     }
 
     public String getStreet() {
         return mStreet;
     }
 
-    public void setPostalCode(String postalCode) {
-        mPostalCode = postalCode;
+    public void setStreet(String street) {
+        mStreet = street;
     }
 
     public String getPostalCode() {
         return mPostalCode;
     }
 
-    public void setPlacename(String placename) {
-        mPlacename = placename;
+    public void setPostalCode(String postalCode) {
+        mPostalCode = postalCode;
     }
 
     public String getPlacename() {
         return mPlacename;
     }
 
-    public void setHouseNumber(String housenumber) {
-        mHouseNumber = housenumber;
+    public void setPlacename(String placename) {
+        mPlacename = placename;
     }
 
     public String getHouseNumber() {
         return mHouseNumber;
+    }
+
+    public void setHouseNumber(String housenumber) {
+        mHouseNumber = housenumber;
     }
 
     public void setExtra(String name) {
@@ -83,6 +84,13 @@ public class RouteStop implements Serializable {
         mLongitude = lon;
     }
 
+    public boolean getDone() {
+        return mDone;
+    }
+
+    public void setDone(boolean done) {
+        mDone = done;
+    }
 
     // maybe we should use https://github.com/googlei18n/libaddressinput here
     //

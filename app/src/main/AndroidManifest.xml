@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,16 +23,13 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".RouteService"
-            android:enabled="true"
-            android:exported="false" />
+        <activity android:name=".ui.StopActivity" />
 
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings" />
 
-        <receiver android:name=".ListWidgetProvider">
+        <receiver android:name=".widget.ListWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -43,13 +40,17 @@
         </receiver>
 
         <service
-            android:name=".ListWidgetService"
+            android:name=".widget.ListWidgetService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <receiver android:name=".ListClickReceiver" />
+        <receiver android:name=".widget.ListClickReceiver" />
 
-        <activity android:name=".StopActivity"></activity>
+        <service
+            android:name=".RouteService"
+            android:enabled="true"
+            android:exported="false" />
+
     </application>
 
 </manifest>

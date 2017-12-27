@@ -3,11 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- "Clear Route", should appear as action button if possible -->
+    <!--
     <item
         android:id="@+id/action_cancel"
         android:icon="@drawable/ic_clear_black_48dp"
         android:title="@string/action_clear"
         app:showAsAction="ifRoom" />
+    -->
+
+    <!-- "Load Route", should appear as action button if possible -->
+    <!--
+    <item
+        android:id="@+id/action_load"
+        android:icon="@drawable/ic_load_black_48dp"
+        android:title="@string/action_load"
+        app:showAsAction="ifRoom" />
+    -->
 
     <!-- Settings, should appear as action button if possible -->
     <item

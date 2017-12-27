@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.tomtom.deliveryroute.StopActivity;
-import com.tomtom.deliveryroute.StopFragment;
+import com.tomtom.deliveryroute.ui.StopActivity;
+import com.tomtom.deliveryroute.ui.StopFragment;
 
 /**
  * This receives the clicks from the (Widget) List of route stops.

@@ -16,6 +16,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tomtom.deliveryroute.ui.MainActivity;
+import com.tomtom.deliveryroute.ui.StopActivity;
 import com.tomtom.navapp.ErrorCallback;
 import com.tomtom.navapp.NavAppClient;
 import com.tomtom.navapp.NavAppError;
@@ -248,7 +250,7 @@ public class RouteService extends Service {
                 mOverlayShowing = false;
 
                 // Start the detail view
-                Intent intent = new Intent(RouteService.this, MainActivity.class);
+                Intent intent = new Intent(RouteService.this, StopActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
 

@@ -35,5 +35,4 @@ public class DeliveryApplication extends Application {
     public void loadRoute() {
         loadRoute(ROUTE_FILENAME);
     }
-
 }
