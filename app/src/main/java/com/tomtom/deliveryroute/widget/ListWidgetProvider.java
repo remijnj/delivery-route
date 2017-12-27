@@ -1,13 +1,14 @@
-package com.tomtom.deliveryroute;
+package com.tomtom.deliveryroute.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
+
+import com.tomtom.deliveryroute.R;
 
 /**
  * This is the ListWidget provider. This sets up the widget and updates the view.

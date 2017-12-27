@@ -1,14 +1,15 @@
-package com.tomtom.deliveryroute;
+package com.tomtom.deliveryroute.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViewsService;
 
+import com.tomtom.deliveryroute.DeliveryApplication;
+
 /**
  * ListWidgetService is the service which sets up the list adapter (ListViewFactory) for the
  * widget list.
- * 
  */
 public class ListWidgetService extends RemoteViewsService {
     private final static String TAG = "ListWidgetService";
@@ -21,7 +22,7 @@ public class ListWidgetService extends RemoteViewsService {
 
         Log.d(TAG, "onGetViewFactory appWidgetId=" + appWidgetId);
 
-        return (new ListViewFactory((DeliveryApplication)getApplication(), this.getApplicationContext(), intent));
+        return (new ListViewFactory((DeliveryApplication) getApplication(), this.getApplicationContext(), intent));
     }
 
 }

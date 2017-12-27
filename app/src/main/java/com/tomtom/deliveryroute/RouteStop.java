@@ -42,6 +42,7 @@ public class RouteStop implements Serializable {
     public String getPostalCode() {
         return mPostalCode;
     }
+
     public void setPlacename(String placename) {
         mPlacename = placename;
     }

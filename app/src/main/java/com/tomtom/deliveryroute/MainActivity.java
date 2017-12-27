@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
         Log.d(TAG, "< launchNavApp");
     }
-    
+
     private void clearRoute() {
         // stop the route service
         Intent intent = new Intent(MainActivity.this, RouteService.class);

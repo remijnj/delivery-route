@@ -1,4 +1,4 @@
-package com.tomtom.deliveryroute;
+package com.tomtom.deliveryroute.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -7,10 +7,13 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.tomtom.deliveryroute.DeliveryApplication;
+import com.tomtom.deliveryroute.R;
+import com.tomtom.deliveryroute.RouteStop;
+
 /**
  * This is needed to feed data into the listview on the widget side. This acts like an ArrayAdapter
  * for a regular ListView.
- *
  */
 public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     private final static String TAG = "ListViewFactory";
