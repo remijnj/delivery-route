@@ -3,7 +3,9 @@ package com.tomtom.deliveryroute.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
+import android.util.TypedValue;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -22,7 +24,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     private int mAppWidgetId;
     private DeliveryApplication mApplication;
 
-    public ListViewFactory(DeliveryApplication application, Context context, Intent intent) {
+    public ListViewFactory(DeliveryApplication application, final Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -68,6 +70,14 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         remoteView.setTextViewText(R.id.row_list_name, stop.getName());
         remoteView.setTextViewText(R.id.row_list_street, stop.getStreet() + " " + stop.getHouseNumber());
 
+        if (position ==  mApplication.mRoute.getCurrentStopIndex()) {
+            // current stop has to be highlighted
+            remoteView.setTextColor(R.id.row_list_name, Color.GREEN);
+            //remoteView.setTextViewTextSize(R.id.row_list_name, TypedValue.COMPLEX_UNIT_SP, 30);
+            remoteView.setTextColor(R.id.row_list_street, Color.GREEN);
+            remoteView.setTextViewTextSize(R.id.row_list_street, TypedValue.COMPLEX_UNIT_SP, 30);
+        }
+
         Log.d(TAG, "< getViewAt");
         return remoteView;
     }
@@ -90,6 +100,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     @Override
     public void onDataSetChanged() {
     }
+
 
     @Override
     public void onDestroy() {

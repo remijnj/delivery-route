@@ -1,6 +1,7 @@
 package com.tomtom.deliveryroute.ui;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,15 @@ class RouteListAdapter extends BaseAdapter {
     public RouteListAdapter(DeliveryApplication application) {
         super();
         mApplication = application;
+        mApplication.mRoute.registerObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                Log.d(TAG, "onChanged");
+
+                super.onChanged();
+                notifyDataSetChanged();
+            }
+        });
         mInflater = (LayoutInflater) mApplication.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -56,9 +66,15 @@ class RouteListAdapter extends BaseAdapter {
         Log.d(TAG, "street=" + stop.getStreet());
         Log.d(TAG, "housenumber=" + stop.getHouseNumber());
         holder.mName.setText(stop.getName());
-        holder.mName.setTextColor(Color.BLACK);
         holder.mStreet.setText(stop.getStreet() + " " + stop.getHouseNumber());
-        holder.mStreet.setTextColor(Color.BLACK);
+
+        if (position == mApplication.mRoute.getCurrentStopIndex()) {
+            // current stop has to be highlighted
+            holder.mName.setTextColor(Color.GREEN);
+            holder.mName.setTextSize(30);
+            holder.mStreet.setTextColor(Color.GREEN);
+            holder.mStreet.setTextSize(30);
+        }
 
         Log.d(TAG, "< getView");
         return convertView;

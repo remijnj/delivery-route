@@ -1,5 +1,6 @@
 package com.tomtom.deliveryroute;
 
+import android.database.DataSetObservable;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,7 +17,7 @@ import java.util.List;
  * This class holds the stops on the route and can load the route.csv file
  */
 
-public class Route {
+public class Route extends DataSetObservable {
     private final static String TAG = "Route";
     private List<RouteStop> mRouteStops;
     private int mCurrentStopIdx;
@@ -42,6 +43,8 @@ public class Route {
         mCurrentStopIdx++;
         RouteStop currentStop = getCurrentStop();
 
+        notifyChanged();
+
         Log.d(TAG, "< nextStop");
 
         return currentStop;
@@ -57,6 +60,8 @@ public class Route {
 
         mCurrentStopIdx--;
         RouteStop currentStop = getCurrentStop();
+
+        notifyChanged();
 
         Log.d(TAG, "< prevStop");
 
@@ -88,6 +93,8 @@ public class Route {
 
     public void goToIndex(int index) {
         mCurrentStopIdx = index;
+
+        notifyChanged();
     }
 
     public int size() {
@@ -105,7 +112,7 @@ public class Route {
      *
      * @return The new created Track object or null in case of an error.
      */
-    private List<RouteStop> readStopsFromFile(String fileName) {
+    public List<RouteStop> readStopsFromFile(String fileName) {
         Log.d(TAG, "> readStopsFromFile");
 
         List<RouteStop> stops = new ArrayList<>();
@@ -192,6 +199,8 @@ public class Route {
                 }
             }
         }
+
+        notifyChanged();
 
         Log.d(TAG, "< readStopsFromFile");
         return stops;
