@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatImageButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +30,12 @@ import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
  */
 public class StopFragment extends Fragment {
     public static final java.lang.String ROUTESTOP_ID = "ROUTESTOP_ID";
+    private static final String TAG = "StopFragment";
     private DeliveryApplication mApplication;
     private RouteStop mStop;
     private boolean mIsCurrentDestination;
     private int mStopId;
+    private View mRootView;
 
     public StopFragment() {
         // Required empty public constructor
@@ -69,32 +73,66 @@ public class StopFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_stop, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_stop, container, false);
 
-        // set stop text
-        TextView text = (TextView) rootView.findViewById(R.id.text_stop);
-        text.setText(mStop.getStopTextUI());
-
-        Button button = (Button) rootView.findViewById(R.id.drive_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button driveButton = (Button) mRootView.findViewById(R.id.drive_button);
+        driveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // set the current stop to be this one
                 mApplication.mRoute.goToIndex(mStopId);
+                mIsCurrentDestination = true;
 
                 // plan the route
                 Intent intent = new Intent(getActivity(), RouteService.class);
                 intent.putExtra(ROUTESTOP, mStop);
                 getActivity().startService(intent);
+
+                updateUI();
             }
         });
 
-        if (mIsCurrentDestination) {
-            button.setVisibility(View.INVISIBLE);
-        }
+        AppCompatImageButton prevButton = (AppCompatImageButton) mRootView.findViewById(R.id.previous_button);
+        prevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "pressed prev");
 
-        final CheckBox checkbox = (CheckBox)rootView.findViewById(R.id.done_checkbox);
-        checkbox.setChecked(mStop.getDone());
+                // Go to previous stop
+                if (mStopId > 0) {
+                    mStopId--;
+                    mStop = mApplication.mRoute.getStop(mStopId);
+                    mIsCurrentDestination = (mApplication.mRoute.getCurrentStopIndex() == mStopId);
+                } else {
+                    Log.w(TAG, "not going to previous stop, we are already on first");
+                }
+
+                // Update the UI
+                updateUI();
+            }
+        });
+
+        AppCompatImageButton nextButton = (AppCompatImageButton) mRootView.findViewById(R.id.next_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "pressed next");
+
+                // Go to next stop
+                if (mStopId + 1 < mApplication.mRoute.size()) {
+                    mStopId++;
+                    mStop = mApplication.mRoute.getStop(mStopId);
+                    mIsCurrentDestination = (mApplication.mRoute.getCurrentStopIndex() == mStopId);
+                } else {
+                    Log.w(TAG, "not going to next stop, we are already on last");
+                }
+
+                // Update the UI
+                updateUI();
+            }
+        });
+
+        final CheckBox checkbox = (CheckBox) mRootView.findViewById(R.id.done_checkbox);
         checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +140,43 @@ public class StopFragment extends Fragment {
             }
         });
 
-        return rootView;
+        updateUI();
+
+        return mRootView;
+    }
+
+    private void updateUI() {
+        // set stop text
+        TextView text = (TextView) mRootView.findViewById(R.id.text_stop);
+        text.setText(mStop.getStopTextUI());
+
+        // only show the Drive button when this is not yet the current destination
+        Button driveButton = (Button) mRootView.findViewById(R.id.drive_button);
+        if (mIsCurrentDestination) {
+            driveButton.setVisibility(View.INVISIBLE);
+        } else {
+            driveButton.setVisibility(View.VISIBLE);
+        }
+
+        // only show the Prev button if we are not already on the first stop
+        AppCompatImageButton prevButton = (AppCompatImageButton) mRootView.findViewById(R.id.previous_button);
+        if (mStopId <= 0) {
+            prevButton.setVisibility(View.INVISIBLE);
+        } else {
+            prevButton.setVisibility(View.VISIBLE);
+        }
+
+        // only show the Next button when this is not the last stop
+        AppCompatImageButton nextButton = (AppCompatImageButton) mRootView.findViewById(R.id.next_button);
+        if (mStopId == (mApplication.mRoute.size() - 1)) {
+            nextButton.setVisibility(View.INVISIBLE);
+        } else {
+            nextButton.setVisibility(View.VISIBLE);
+        }
+
+        // Set the checkbox correctly
+        final CheckBox checkbox = (CheckBox) mRootView.findViewById(R.id.done_checkbox);
+        checkbox.setChecked(mStop.getDone());
     }
 
 

@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.tomtom.deliveryroute.StopFragment">
+    tools:context="com.tomtom.deliveryroute.ui.StopFragment">
 
     <!-- large checkbox -->
     <CheckBox
@@ -29,15 +29,53 @@
             android:text=""
             android:textSize="35sp" />
 
-        <!-- The drive button to trigger planning a route -->
-        <Button
-            android:id="@+id/drive_button"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"
-            android:text="@string/button_drive"
-            android:textSize="30sp"
-            android:theme="@style/BlueButton" />
+            android:layout_alignParentBottom="true">
+
+            <!-- The drive button to trigger planning a route -->
+            <Button
+                android:id="@+id/drive_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="30dp"
+                android:text="@string/button_drive"
+                android:textSize="30sp"
+                android:theme="@style/BlueButton" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true">
+
+                <!-- Prev button -->
+                <ImageButton
+                    android:id="@+id/previous_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow_back_black_48dp" />
+
+                <!-- The next button -->
+                <ImageButton
+                    android:id="@+id/next_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_arrow_forward_black_48dp" />
+
+                <!--
+                <Button
+                    android:id="@+id/next_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:text="@string/button_next_stop"
+                    android:textSize="30sp"
+                    android:theme="@style/BlueButton" />
+                -->
+            </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
+
 </LinearLayout>
