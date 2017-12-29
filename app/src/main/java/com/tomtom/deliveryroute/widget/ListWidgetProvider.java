@@ -36,7 +36,7 @@ public class ListWidgetProvider extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         Log.d(TAG, "> onEnabled");
-        DeliveryApplication.mRoute.registerObserver(new DataSetObserver() {
+        DeliveryApplication.getRoute().registerObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 Log.d(TAG, "> onChanged");
@@ -95,7 +95,7 @@ public class ListWidgetProvider extends AppWidgetProvider {
             widget.setPendingIntentTemplate(R.id.listView, clickPendingIntent);
 
             // set the scroll position
-            final int scrollPos = DeliveryApplication.mRoute.getCurrentStopIndex();
+            final int scrollPos = DeliveryApplication.getRoute().getCurrentStopIndex();
             Log.d(TAG, "setting scroll position to " + scrollPos);
             widget.setScrollPosition(R.id.listView, scrollPos);
 /*

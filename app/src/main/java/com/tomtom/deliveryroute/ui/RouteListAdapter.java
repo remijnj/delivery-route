@@ -28,7 +28,7 @@ class RouteListAdapter extends BaseAdapter {
     public RouteListAdapter(DeliveryApplication application) {
         super();
         mApplication = application;
-        mApplication.mRoute.registerObserver(new DataSetObserver() {
+        mApplication.getRoute().registerObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 Log.d(TAG, "onChanged");
@@ -42,13 +42,13 @@ class RouteListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.d(TAG, "getCount()=" + mApplication.mRoute.size());
-        return mApplication.mRoute.size();
+        Log.d(TAG, "getCount()=" + mApplication.getRoute().size());
+        return mApplication.getRoute().size();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        RouteStop stop = mApplication.mRoute.getStop(position);
+        RouteStop stop = mApplication.getRoute().getStop(position);
         ViewHolder holder;
         Log.d(TAG, "> getView(" + position + ")");
 
@@ -65,7 +65,7 @@ class RouteListAdapter extends BaseAdapter {
         }
 
         int textColor = Color.LTGRAY;
-        if (position == mApplication.mRoute.getCurrentStopIndex()) {
+        if (position == mApplication.getRoute().getCurrentStopIndex()) {
             // current stop has to be highlighted
             textColor = Color.GREEN;
         } else if (stop.isDone()) {

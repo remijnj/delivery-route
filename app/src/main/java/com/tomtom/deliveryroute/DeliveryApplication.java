@@ -13,7 +13,7 @@ import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
 public class DeliveryApplication extends Application {
     private static final String TAG = "DeliveryApplication";
     private static String ROUTE_FILENAME = "route.csv";
-    public static Route mRoute = null;
+    private static Route mRoute = null;
 
     private static boolean mActivityVisible;
 

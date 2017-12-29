@@ -103,6 +103,5 @@ public class MainActivity extends AppCompatActivity {
         // stop the route service
         Intent intent = new Intent(MainActivity.this, RouteService.class);
         stopService(intent);
-        mApplication.mRoute = null;
     }
 }

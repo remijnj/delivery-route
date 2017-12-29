@@ -64,12 +64,12 @@ public class StopFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mApplication = (DeliveryApplication) getActivity().getApplication();
         if (getArguments() != null) {
-            mStopId = getArguments().getInt(ROUTESTOP_ID, mApplication.mRoute.getCurrentStopIndex());
+            mStopId = getArguments().getInt(ROUTESTOP_ID, mApplication.getRoute().getCurrentStopIndex());
         } else {
-            mStopId = mApplication.mRoute.getCurrentStopIndex();
+            mStopId = mApplication.getRoute().getCurrentStopIndex();
         }
-        mStop = mApplication.mRoute.getStop(mStopId);
-        mIsCurrentDestination = mApplication.mRoute.getCurrentStopIndex() == mStopId;
+        mStop = mApplication.getRoute().getStop(mStopId);
+        mIsCurrentDestination = mApplication.getRoute().getCurrentStopIndex() == mStopId;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class StopFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // set the current stop to be this one
-                mApplication.mRoute.goToIndex(mStopId);
+                mApplication.getRoute().goToIndex(mStopId);
                 mIsCurrentDestination = true;
 
                 // plan the route
@@ -104,8 +104,8 @@ public class StopFragment extends Fragment {
                 // Go to previous stop
                 if (mStopId > 0) {
                     mStopId--;
-                    mStop = mApplication.mRoute.getStop(mStopId);
-                    mIsCurrentDestination = (mApplication.mRoute.getCurrentStopIndex() == mStopId);
+                    mStop = mApplication.getRoute().getStop(mStopId);
+                    mIsCurrentDestination = (mApplication.getRoute().getCurrentStopIndex() == mStopId);
                 } else {
                     Log.w(TAG, "not going to previous stop, we are already on first");
                 }
@@ -122,10 +122,10 @@ public class StopFragment extends Fragment {
                 Log.d(TAG, "pressed next");
 
                 // Go to next stop
-                if (mStopId + 1 < mApplication.mRoute.size()) {
+                if (mStopId + 1 < mApplication.getRoute().size()) {
                     mStopId++;
-                    mStop = mApplication.mRoute.getStop(mStopId);
-                    mIsCurrentDestination = (mApplication.mRoute.getCurrentStopIndex() == mStopId);
+                    mStop = mApplication.getRoute().getStop(mStopId);
+                    mIsCurrentDestination = (mApplication.getRoute().getCurrentStopIndex() == mStopId);
                 } else {
                     Log.w(TAG, "not going to next stop, we are already on last");
                 }
@@ -139,7 +139,7 @@ public class StopFragment extends Fragment {
         checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mApplication.mRoute.setStopDone(mStopId, checkbox.isChecked());
+                mApplication.getRoute().setStopDone(mStopId, checkbox.isChecked());
             }
         });
 
@@ -187,7 +187,7 @@ public class StopFragment extends Fragment {
 
         // only show the Next button when this is not the last stop
         AppCompatImageButton nextButton = (AppCompatImageButton) mRootView.findViewById(R.id.next_button);
-        if (mStopId == (mApplication.mRoute.size() - 1)) {
+        if (mStopId == (mApplication.getRoute().size() - 1)) {
             nextButton.setVisibility(View.INVISIBLE);
         } else {
             nextButton.setVisibility(View.VISIBLE);
