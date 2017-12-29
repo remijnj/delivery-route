@@ -56,19 +56,12 @@ class RouteListAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.mName = (TextView) convertView.findViewById(R.id.row_list_name);
             holder.mStreet = (TextView) convertView.findViewById(R.id.row_list_street);
-
+            holder.mPlacename = (TextView) convertView.findViewById(R.id.row_list_placename);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Log.d(TAG, "name=" + stop.getName());
-        Log.d(TAG, "street=" + stop.getStreet());
-        Log.d(TAG, "housenumber=" + stop.getHouseNumber());
-        holder.mName.setText(stop.getName());
-        holder.mStreet.setText(stop.getStreet() + " " + stop.getHouseNumber());
-
-        Log.d(TAG, "position=" + position + " getCurrentStopIndex=" + mApplication.mRoute.getCurrentStopIndex());
         int textColor = Color.LTGRAY;
         if (position == mApplication.mRoute.getCurrentStopIndex()) {
             // current stop has to be highlighted
@@ -78,8 +71,35 @@ class RouteListAdapter extends BaseAdapter {
         } else if (stop.isBadAddress()) {
             textColor = Color.RED;
         }
-        holder.mName.setTextColor(textColor);
-        holder.mStreet.setTextColor(textColor);
+
+        Log.d(TAG, "name=" + stop.getName());
+        Log.d(TAG, "street=" + stop.getStreet());
+        Log.d(TAG, "housenumber=" + stop.getHouseNumber());
+        Log.d(TAG, "placename=" + stop.getPlacename());
+
+        if (stop.getName() != null) {
+            holder.mName.setText(stop.getName());
+            holder.mName.setTextColor(textColor);
+            holder.mName.setVisibility(View.VISIBLE);
+        } else {
+            holder.mName.setVisibility(View.INVISIBLE);
+        }
+
+        if (stop.getStreet() != null) {
+            holder.mStreet.setText(stop.getStreet() + " " + stop.getHouseNumber());
+            holder.mStreet.setTextColor(textColor);
+            holder.mStreet.setVisibility(View.VISIBLE);
+        } else {
+            holder.mStreet.setVisibility(View.INVISIBLE);
+        }
+
+        if (stop.getPlacename() != null) {
+            holder.mPlacename.setText(stop.getPlacename());
+            holder.mPlacename.setVisibility(View.VISIBLE);
+            holder.mPlacename.setTextColor(textColor);
+        } else {
+            holder.mPlacename.setVisibility(View.INVISIBLE);
+        }
 
         Log.d(TAG, "< getView");
         return convertView;
@@ -98,5 +118,6 @@ class RouteListAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView mName;
         TextView mStreet;
+        TextView mPlacename;
     }
 }

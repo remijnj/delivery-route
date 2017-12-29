@@ -7,4 +7,5 @@
     <item name="row_list_name" type="id" />
     <item name="row_list_street" type="id" />
     <item name="row_list_number" type="id" />
+    <item name="row_list_placename" type="id" />
 </resources>

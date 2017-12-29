@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -64,14 +65,6 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         fillInIntent.putExtra(ListClickReceiver.EXTRA_ITEMID, position);
         remoteView.setOnClickFillInIntent(R.id.row_container, fillInIntent);
 
-        Log.d(TAG, "name=" + stop.getName());
-        Log.d(TAG, "street=" + stop.getStreet());
-        Log.d(TAG, "housenumber=" + stop.getHouseNumber());
-        remoteView.setTextViewText(R.id.row_list_name, stop.getName());
-        remoteView.setTextViewText(R.id.row_list_street, stop.getStreet() + " " + stop.getHouseNumber());
-
-        Log.d(TAG, "position=" + position + " getCurrentStopIndex=" + mApplication.mRoute.getCurrentStopIndex());
-
         int textColor = Color.LTGRAY;
         if (position == mApplication.mRoute.getCurrentStopIndex()) {
             // current stop has to be highlighted
@@ -82,9 +75,32 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
             textColor = Color.RED;
         }
 
-        remoteView.setTextColor(R.id.row_list_name, textColor);
-        remoteView.setTextColor(R.id.row_list_street, textColor);
-        //remoteView.setTextViewTextSize(R.id.row_list_street, TypedValue.COMPLEX_UNIT_SP, 30);
+
+        Log.d(TAG, "name=" + stop.getName());
+        Log.d(TAG, "street=" + stop.getStreet());
+        Log.d(TAG, "housenumber=" + stop.getHouseNumber());
+        Log.d(TAG, "placename=" + stop.getPlacename());
+        if (stop.getName() != null) {
+            remoteView.setTextViewText(R.id.row_list_name, stop.getName());
+            remoteView.setTextColor(R.id.row_list_name, textColor);
+            remoteView.setViewVisibility(R.id.row_list_name, View.VISIBLE);
+        } else {
+            remoteView.setViewVisibility(R.id.row_list_name, View.INVISIBLE);
+        }
+        if (stop.getStreet() != null) {
+            remoteView.setTextViewText(R.id.row_list_street, stop.getStreet() + " " + stop.getHouseNumber());
+            remoteView.setTextColor(R.id.row_list_street, textColor);
+            remoteView.setViewVisibility(R.id.row_list_street, View.VISIBLE);
+        } else {
+            remoteView.setViewVisibility(R.id.row_list_street, View.INVISIBLE);
+        }
+        if (stop.getPlacename() != null) {
+            remoteView.setTextViewText(R.id.row_list_placename, stop.getPlacename());
+            remoteView.setTextColor(R.id.row_list_placename, textColor);
+            remoteView.setViewVisibility(R.id.row_list_placename, View.VISIBLE);
+        } else {
+            remoteView.setViewVisibility(R.id.row_list_placename, View.INVISIBLE);
+        }
 
         Log.d(TAG, "< getViewAt");
         return remoteView;
