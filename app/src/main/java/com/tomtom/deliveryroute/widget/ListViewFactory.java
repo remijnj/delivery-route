@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -77,26 +79,31 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         Log.d(TAG, "street=" + stop.getStreet());
         Log.d(TAG, "housenumber=" + stop.getHouseNumber());
         Log.d(TAG, "placename=" + stop.getPlacename());
-        if (stop.getName() != null) {
+        if (stop.getName() != null && !stop.getName().isEmpty()) {
             remoteView.setTextViewText(R.id.row_list_name, stop.getName());
             remoteView.setTextColor(R.id.row_list_name, textColor);
             remoteView.setViewVisibility(R.id.row_list_name, View.VISIBLE);
         } else {
-            remoteView.setViewVisibility(R.id.row_list_name, View.INVISIBLE);
+            Log.d(TAG, "name is NULL");
+            remoteView.setViewVisibility(R.id.row_list_name, View.GONE);
         }
-        if (stop.getStreet() != null) {
-            remoteView.setTextViewText(R.id.row_list_street, stop.getStreet() + " " + stop.getHouseNumber());
+        if (stop.getStreet() != null && !stop.getStreet().isEmpty()) {
+            SpannableString streetAddr = new SpannableString(stop.getStreet() + " " + stop.getHouseNumber());
+            streetAddr.setSpan(new RelativeSizeSpan(1.3f), stop.getStreet().length(), streetAddr.length(), 0);
+
+            remoteView.setTextViewText(R.id.row_list_street, streetAddr);
             remoteView.setTextColor(R.id.row_list_street, textColor);
             remoteView.setViewVisibility(R.id.row_list_street, View.VISIBLE);
         } else {
-            remoteView.setViewVisibility(R.id.row_list_street, View.INVISIBLE);
+            remoteView.setTextViewText(R.id.row_list_street, "");
+            remoteView.setViewVisibility(R.id.row_list_street, View.INVISIBLE); // make it keep taking up space if not existing
         }
-        if (stop.getPlacename() != null) {
+        if (stop.getPlacename() != null && !stop.getPlacename().isEmpty()) {
             remoteView.setTextViewText(R.id.row_list_placename, stop.getPlacename());
             remoteView.setTextColor(R.id.row_list_placename, textColor);
             remoteView.setViewVisibility(R.id.row_list_placename, View.VISIBLE);
         } else {
-            remoteView.setViewVisibility(R.id.row_list_placename, View.INVISIBLE);
+            remoteView.setViewVisibility(R.id.row_list_placename, View.GONE);
         }
 
         Log.d(TAG, "< getViewAt");

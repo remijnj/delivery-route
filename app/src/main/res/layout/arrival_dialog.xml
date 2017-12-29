@@ -19,14 +19,12 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:background="@color/bgColorOverlay"
-            android:id="@+id/arrival_text"
-            android:text="Test Text Arrival Dialog" />
+            android:id="@+id/arrival_text" />
         <TextView
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:textSize="32sp"
             android:background="@color/bgColorOverlay"
-            android:id="@+id/arrival_text_housenumber"
-            android:text="Test Text Arrival Dialog" />
+            android:id="@+id/arrival_text_housenumber" />
     </LinearLayout>
 </RelativeLayout>

@@ -3,6 +3,8 @@ package com.tomtom.deliveryroute.ui;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,28 +79,31 @@ class RouteListAdapter extends BaseAdapter {
         Log.d(TAG, "housenumber=" + stop.getHouseNumber());
         Log.d(TAG, "placename=" + stop.getPlacename());
 
-        if (stop.getName() != null) {
+        if (stop.getName() != null && !stop.getName().isEmpty()) {
             holder.mName.setText(stop.getName());
             holder.mName.setTextColor(textColor);
             holder.mName.setVisibility(View.VISIBLE);
         } else {
-            holder.mName.setVisibility(View.INVISIBLE);
+            holder.mName.setVisibility(View.GONE);
         }
 
-        if (stop.getStreet() != null) {
-            holder.mStreet.setText(stop.getStreet() + " " + stop.getHouseNumber());
+        if (stop.getStreet() != null && !stop.getStreet().isEmpty()) {
+            SpannableString streetAddr = new SpannableString(stop.getStreet() + " " + stop.getHouseNumber());
+            streetAddr.setSpan(new RelativeSizeSpan(1.3f), stop.getStreet().length(), streetAddr.length(), 0);
+            holder.mStreet.setText(streetAddr);
             holder.mStreet.setTextColor(textColor);
             holder.mStreet.setVisibility(View.VISIBLE);
         } else {
-            holder.mStreet.setVisibility(View.INVISIBLE);
+            holder.mStreet.setText("");
+            holder.mStreet.setVisibility(View.INVISIBLE); // make it keep taking up space if not existing
         }
 
-        if (stop.getPlacename() != null) {
+        if (stop.getPlacename() != null && !stop.getPlacename().isEmpty()) {
             holder.mPlacename.setText(stop.getPlacename());
             holder.mPlacename.setVisibility(View.VISIBLE);
             holder.mPlacename.setTextColor(textColor);
         } else {
-            holder.mPlacename.setVisibility(View.INVISIBLE);
+            holder.mPlacename.setVisibility(View.GONE);
         }
 
         Log.d(TAG, "< getView");
