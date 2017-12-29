@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -22,19 +23,47 @@ public class ListWidgetProvider extends AppWidgetProvider {
     private final static String TAG = "ListWidgetProvider";
     private int X = 0;
 
+    private static void updateAll(Context context) {
+        final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+        final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
+
+        Intent intent = new Intent(context, ListWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetManager.getAppWidgetIds(cn));
+        context.sendBroadcast(intent);
+    }
+
     @Override
     public void onEnabled(final Context context) {
+        Log.d(TAG, "> onEnabled");
         DeliveryApplication.mRoute.registerObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
-                Log.d(TAG, "onChanged");
+                Log.d(TAG, "> onChanged");
 
                 super.onChanged();
-                final AppWidgetManager mgr = AppWidgetManager.getInstance(context);
+                final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
                 final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
-                mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.listView);
+
+                // THIS DOES NOT WORK - TODO: find out how to make the scrolling work
+                /*
+                // scroll to right place
+                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.listwidget);
+                remoteViews.setScrollPosition(R.id.listView, DeliveryApplication.mRoute.getCurrentStopIndex());
+
+                // notify widget of changes in the listview (scroll)
+                widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(cn), remoteViews);
+                */
+
+                // notify widget of changes in the listview (content)
+                widgetManager.notifyAppWidgetViewDataChanged(widgetManager.getAppWidgetIds(cn), R.id.listView);
+
+                updateAll(context);
+
+                Log.d(TAG, "< onChanged");
             }
         });
+        Log.d(TAG, "< onEnabled");
     }
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -45,18 +74,14 @@ public class ListWidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             Log.d(TAG, "onUpdate() pkgname=[" + context.getPackageName() + "]");
             // Debug text in the textview
-            RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.listwidget);
-            //widget.setTextViewText(R.id.textbox, "hello appWidgetId=" + appWidgetId + " X=" + X);
-            X++;
-            Log.d(TAG, "X=" + X);
+            final RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.listwidget);
 
             // Now comes the actual list
             // RemoteViews Service needed to provide adapter for ListView
             Intent serviceIntent = new Intent(context, ListWidgetService.class);
-            //passing app widget id to that RemoteViews Service
+            // passing app widget id to that RemoteViews Service
             serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            //setting a unique Uri to the intent
-            //don't know its purpose to me right now
+            // setting a unique Uri to the intent, why?
             serviceIntent.setData(Uri.parse(serviceIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
             //setting adapter to listview of the widget
@@ -68,6 +93,22 @@ public class ListWidgetProvider extends AppWidgetProvider {
             PendingIntent clickPendingIntent = PendingIntent.getBroadcast(context, 0, clickIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             widget.setPendingIntentTemplate(R.id.listView, clickPendingIntent);
+
+            // set the scroll position
+            final int scrollPos = DeliveryApplication.mRoute.getCurrentStopIndex();
+            Log.d(TAG, "setting scroll position to " + scrollPos);
+            widget.setScrollPosition(R.id.listView, scrollPos);
+/*
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "delayed: setting scroll position to " + scrollPos);
+
+                    widget.setScrollPosition(R.id.listView, scrollPos);
+                }
+            }, 1000);
+*/
 
             //setting an empty view in case of no data
             //views.setEmptyView(R.id.list_view, R.id.empty_view);

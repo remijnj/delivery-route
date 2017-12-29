@@ -19,6 +19,7 @@ public class RouteStop implements Serializable {
     private double mLatitude;
     private double mLongitude;
     private boolean mDone;
+    private boolean mBadAddress;
 
     public String getName() {
         return mName;
@@ -84,12 +85,20 @@ public class RouteStop implements Serializable {
         mLongitude = lon;
     }
 
-    public boolean getDone() {
+    public boolean isDone() {
         return mDone;
     }
 
     public void setDone(boolean done) {
         mDone = done;
+    }
+
+    public boolean isBadAddress() {
+        return mBadAddress;
+    }
+
+    public void setBadAddress(boolean badAddress) {
+        mBadAddress = badAddress;
     }
 
     // maybe we should use https://github.com/googlei18n/libaddressinput here

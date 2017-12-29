@@ -29,15 +29,11 @@ public class DeliveryApplication extends Application {
         mActivityVisible = false;
     }
 
-    public void loadRoute(String filename) {
+    private void loadRoute(String filename) {
         Log.d(TAG, "> loadRoute");
 
-        if (mRoute == null) {
-            // Load the route
-            mRoute = new Route(filename);
-        } else {
-            mRoute.readStopsFromFile(filename);
-        }
+        mRoute.loadFromFile(filename);
+
         // Go to first stop
         RouteStop stop = mRoute.nextStop();
 
@@ -49,11 +45,18 @@ public class DeliveryApplication extends Application {
         Log.d(TAG, "< loadRoute");
     }
 
-    public void loadRoute() {
+    private void loadRoute() {
         loadRoute(ROUTE_FILENAME);
     }
 
     public static Route getRoute() {
         return mRoute;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mRoute = new Route();
+        loadRoute();
     }
 }

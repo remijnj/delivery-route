@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "> onCreate");
 
         mApplication = (DeliveryApplication) getApplication();
-        mApplication.loadRoute();
+        //mApplication.loadRoute();
 
         super.onCreate(savedInstanceState);
 

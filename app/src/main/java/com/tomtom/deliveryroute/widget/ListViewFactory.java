@@ -34,8 +34,9 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getCount() {
-        Log.d(TAG, "getCount()=" + mApplication.mRoute.size());
-        return mApplication.mRoute.size();
+        int size = mApplication.mRoute.size();
+        Log.d(TAG, "getCount() => " + size);
+        return size;
     }
 
     @Override
@@ -57,7 +58,6 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         final RemoteViews remoteView = new RemoteViews(
                 mContext.getPackageName(), R.layout.list_row);
         RouteStop stop = mApplication.mRoute.getStop(position);
-
         Log.d(TAG, "> getViewAt(" + position + ")");
 
         Intent fillInIntent = new Intent();
@@ -70,13 +70,21 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         remoteView.setTextViewText(R.id.row_list_name, stop.getName());
         remoteView.setTextViewText(R.id.row_list_street, stop.getStreet() + " " + stop.getHouseNumber());
 
-        if (position ==  mApplication.mRoute.getCurrentStopIndex()) {
+        Log.d(TAG, "position=" + position + " getCurrentStopIndex=" + mApplication.mRoute.getCurrentStopIndex());
+
+        int textColor = Color.LTGRAY;
+        if (position == mApplication.mRoute.getCurrentStopIndex()) {
             // current stop has to be highlighted
-            remoteView.setTextColor(R.id.row_list_name, Color.GREEN);
-            //remoteView.setTextViewTextSize(R.id.row_list_name, TypedValue.COMPLEX_UNIT_SP, 30);
-            remoteView.setTextColor(R.id.row_list_street, Color.GREEN);
-            remoteView.setTextViewTextSize(R.id.row_list_street, TypedValue.COMPLEX_UNIT_SP, 30);
+            textColor = Color.GREEN;
+        } else if (stop.isDone()) {
+            textColor = 0xFF666666;
+        } else if (stop.isBadAddress()) {
+            textColor = Color.RED;
         }
+
+        remoteView.setTextColor(R.id.row_list_name, textColor);
+        remoteView.setTextColor(R.id.row_list_street, textColor);
+        //remoteView.setTextViewTextSize(R.id.row_list_street, TypedValue.COMPLEX_UNIT_SP, 30);
 
         Log.d(TAG, "< getViewAt");
         return remoteView;
@@ -94,16 +102,17 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onCreate() {
-        mApplication.loadRoute();
+        Log.d(TAG, "onCreate");
     }
 
     @Override
     public void onDataSetChanged() {
+        Log.d(TAG, "onDataSetChanged");
     }
-
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
     }
 }
 

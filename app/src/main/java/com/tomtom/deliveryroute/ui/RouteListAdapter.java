@@ -68,13 +68,18 @@ class RouteListAdapter extends BaseAdapter {
         holder.mName.setText(stop.getName());
         holder.mStreet.setText(stop.getStreet() + " " + stop.getHouseNumber());
 
+        Log.d(TAG, "position=" + position + " getCurrentStopIndex=" + mApplication.mRoute.getCurrentStopIndex());
+        int textColor = Color.LTGRAY;
         if (position == mApplication.mRoute.getCurrentStopIndex()) {
             // current stop has to be highlighted
-            holder.mName.setTextColor(Color.GREEN);
-            holder.mName.setTextSize(30);
-            holder.mStreet.setTextColor(Color.GREEN);
-            holder.mStreet.setTextSize(30);
+            textColor = Color.GREEN;
+        } else if (stop.isDone()) {
+            textColor = 0xFF666666;
+        } else if (stop.isBadAddress()) {
+            textColor = Color.RED;
         }
+        holder.mName.setTextColor(textColor);
+        holder.mStreet.setTextColor(textColor);
 
         Log.d(TAG, "< getView");
         return convertView;

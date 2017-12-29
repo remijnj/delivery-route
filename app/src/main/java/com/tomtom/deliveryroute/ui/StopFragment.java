@@ -2,6 +2,7 @@ package com.tomtom.deliveryroute.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageButton;
@@ -17,6 +18,8 @@ import com.tomtom.deliveryroute.DeliveryApplication;
 import com.tomtom.deliveryroute.R;
 import com.tomtom.deliveryroute.RouteService;
 import com.tomtom.deliveryroute.RouteStop;
+
+import org.w3c.dom.Text;
 
 import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
 
@@ -136,7 +139,7 @@ public class StopFragment extends Fragment {
         checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mStop.setDone(checkbox.isChecked());
+                mApplication.mRoute.setStopDone(mStopId, checkbox.isChecked());
             }
         });
 
@@ -152,11 +155,27 @@ public class StopFragment extends Fragment {
 
         // only show the Drive button when this is not yet the current destination
         Button driveButton = (Button) mRootView.findViewById(R.id.drive_button);
-        if (mIsCurrentDestination) {
+        if (mIsCurrentDestination || mStop.isBadAddress()) {
             driveButton.setVisibility(View.INVISIBLE);
         } else {
             driveButton.setVisibility(View.VISIBLE);
         }
+
+        // show special text for current destination and bad address
+        TextView bottomText = (TextView) mRootView.findViewById(R.id.bottom_text);
+        if (mIsCurrentDestination) {
+            bottomText.setText(R.string.current_stop);
+            bottomText.setTextColor(Color.GREEN);
+            bottomText.setVisibility(View.VISIBLE);
+        } else if (mStop.isBadAddress()){
+            bottomText.setText(R.string.bad_address);
+            bottomText.setTextColor(Color.RED);
+            bottomText.setVisibility(View.VISIBLE);
+        } else {
+            bottomText.setVisibility(View.INVISIBLE);
+        }
+
+
 
         // only show the Prev button if we are not already on the first stop
         AppCompatImageButton prevButton = (AppCompatImageButton) mRootView.findViewById(R.id.previous_button);
@@ -176,7 +195,7 @@ public class StopFragment extends Fragment {
 
         // Set the checkbox correctly
         final CheckBox checkbox = (CheckBox) mRootView.findViewById(R.id.done_checkbox);
-        checkbox.setChecked(mStop.getDone());
+        checkbox.setChecked(mStop.isDone());
     }
 
 

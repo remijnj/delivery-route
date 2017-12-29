@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">Delivery Route</string>
-    <string name="button_start">Start route</string>
-    <string name="button_stop">Cancel route</string>
-    <string name="button_prev_stop">Previous</string>
-    <string name="button_next_stop">Next</string>
 
-    <string name="current_stop">Current stop:</string>
+    <string name="button_drive">Drive</string>
+    <string name="current_stop">Current destination</string>
+    <string name="bad_address">Bad address</string>
+    <string name="planning_route">Planning route to </string>
 
     <string name="action_clear">Clear route</string>
     <string name="action_settings">Settings</string>
+    <string name="action_load">load</string>
 
     <!-- Strings related to Settings -->
     <string name="title_activity_settings">Settings</string>
@@ -36,10 +36,4 @@
         <item>10000</item>
         <item>-1</item>
     </string-array>
-
-    <string name="button_drive">Drive</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="action_load">load</string>
 </resources>
