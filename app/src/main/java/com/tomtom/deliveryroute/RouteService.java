@@ -143,6 +143,16 @@ public class RouteService extends Service {
         Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
         toast.show();
 
+        // now jump to Home when this setting is enabled
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
+        Boolean homeOnPlan = preferences.getBoolean("home_on_plan", true);
+        if (homeOnPlan) {
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory(Intent.CATEGORY_HOME);
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(homeIntent);
+        }
+
         Log.d(TAG, "< planRouteToNextStop");
     }
 

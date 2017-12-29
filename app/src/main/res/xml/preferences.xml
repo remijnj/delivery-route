@@ -21,6 +21,11 @@
         android:positiveButtonText="@null"
         android:summary="%s"
         android:title="@string/pref_notification_distance" />
+
+    <CheckBoxPreference
+        android:title="@string/jump_to_home_on_plan"
+        android:key="home_on_plan"
+        android:defaultValue="true" />
 <!--
     <PreferenceScreen
         android:key="list_elements"

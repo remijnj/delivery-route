@@ -22,6 +22,7 @@
     <string name="field_placename">City</string>
     <string name="field_postalcode">Postal code</string>
     <string name="action_list">List</string>
+    <string name="jump_to_home_on_plan">Go to home screen when planning route</string>
     <string-array name="pref_notification_distances_metric">
         <item>Never</item>
         <item>50 meters</item>
