@@ -1,6 +1,7 @@
 package com.tomtom.deliveryroute;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -53,10 +54,21 @@ public class RouteService extends Service {
     public void onCreate() {
         Log.d(TAG, "> onCreate");
 
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        PendingIntent mainPendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        mainIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
         // start as a foreground service so this keeps running
         Notification notification = new Notification.Builder(this)
                 .setContentTitle("Delivery Route")
                 .setSmallIcon(R.drawable.ic_local_shipping_white_24dp)
+                .setContentIntent(mainPendingIntent)
+                .setShowWhen(false)
                 .build();
         startForeground(FOREGROUND_ID, notification);
 
