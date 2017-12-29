@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -17,7 +16,6 @@ import com.tomtom.deliveryroute.RouteStop;
 /**
  * This is needed to feed data into the listview on the widget side. This acts like an ArrayAdapter
  * for a regular ListView.
- *
  */
 public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     private final static String TAG = "ListViewFactory";
@@ -74,7 +72,6 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         } else if (stop.isBadAddress()) {
             textColor = Color.RED;
         }
-
 
         Log.d(TAG, "name=" + stop.getName());
         Log.d(TAG, "street=" + stop.getStreet());

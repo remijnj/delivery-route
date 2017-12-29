@@ -127,7 +127,7 @@ public class RouteService extends Service {
         if (destname == null) {
             destname = lat + "," + lon;
         }
-        String toastText = getString(R.string.planning_route) + destname;
+        String toastText = getString(R.string.planning_route) + " " + destname;
         Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT);
         toast.show();
 

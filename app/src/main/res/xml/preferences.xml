@@ -21,5 +21,28 @@
         android:positiveButtonText="@null"
         android:summary="%s"
         android:title="@string/pref_notification_distance" />
+<!--
+    <PreferenceScreen
+        android:key="list_elements"
+        android:title="@string/list_elements"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:title="@string/field_name"
+            android:key="list_show_name"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:title="@string/field_street"
+            android:key="list_show_name"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:title="@string/field_placename"
+            android:key="list_show_name"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:title="@string/field_postalcode"
+            android:key="list_show_name"
+            android:defaultValue="false" />
+    </PreferenceScreen>
+-->
 
 </PreferenceScreen>
