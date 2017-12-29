@@ -16,16 +16,15 @@ import com.tomtom.navapp.NavAppClient;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    DeliveryApplication mApplication;
+    private DeliveryApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "> onCreate");
 
-        mApplication = (DeliveryApplication) getApplication();
-        //mApplication.loadRoute();
-
         super.onCreate(savedInstanceState);
+
+        mApplication = (DeliveryApplication) getApplication();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
