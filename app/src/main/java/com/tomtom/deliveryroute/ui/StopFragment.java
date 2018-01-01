@@ -19,8 +19,6 @@ import com.tomtom.deliveryroute.R;
 import com.tomtom.deliveryroute.RouteService;
 import com.tomtom.deliveryroute.RouteStop;
 
-import org.w3c.dom.Text;
-
 import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
 
 
@@ -167,14 +165,13 @@ public class StopFragment extends Fragment {
             bottomText.setText(R.string.current_stop);
             bottomText.setTextColor(Color.GREEN);
             bottomText.setVisibility(View.VISIBLE);
-        } else if (mStop.isBadAddress()){
+        } else if (mStop.isBadAddress()) {
             bottomText.setText(R.string.bad_address);
             bottomText.setTextColor(Color.RED);
             bottomText.setVisibility(View.VISIBLE);
         } else {
             bottomText.setVisibility(View.INVISIBLE);
         }
-
 
 
         // only show the Prev button if we are not already on the first stop

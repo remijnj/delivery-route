@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.net.Uri;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -36,6 +35,9 @@ public class ListWidgetProvider extends AppWidgetProvider {
     @Override
     public void onEnabled(final Context context) {
         Log.d(TAG, "> onEnabled");
+
+        // TODO: maybe this needs to be moved to the onUpdate call or into another file altogether
+        // now we need to re-add the widget on every app update to make this monitoring work
         DeliveryApplication.getRoute().registerObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -44,16 +46,6 @@ public class ListWidgetProvider extends AppWidgetProvider {
                 super.onChanged();
                 final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
                 final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
-
-                // THIS DOES NOT WORK - TODO: find out how to make the scrolling work
-                /*
-                // scroll to right place
-                RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.listwidget);
-                remoteViews.setScrollPosition(R.id.listView, DeliveryApplication.mRoute.getCurrentStopIndex());
-
-                // notify widget of changes in the listview (scroll)
-                widgetManager.updateAppWidget(widgetManager.getAppWidgetIds(cn), remoteViews);
-                */
 
                 // notify widget of changes in the listview (content)
                 widgetManager.notifyAppWidgetViewDataChanged(widgetManager.getAppWidgetIds(cn), R.id.listView);
@@ -72,8 +64,6 @@ public class ListWidgetProvider extends AppWidgetProvider {
 
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int appWidgetId : appWidgetIds) {
-            Log.d(TAG, "onUpdate() pkgname=[" + context.getPackageName() + "]");
-            // Debug text in the textview
             final RemoteViews widget = new RemoteViews(context.getPackageName(), R.layout.listwidget);
 
             // Now comes the actual list
@@ -98,22 +88,6 @@ public class ListWidgetProvider extends AppWidgetProvider {
             final int scrollPos = DeliveryApplication.getRoute().getCurrentStopIndex();
             Log.d(TAG, "setting scroll position to " + scrollPos);
             widget.setScrollPosition(R.id.listView, scrollPos);
-/*
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "delayed: setting scroll position to " + scrollPos);
-
-                    widget.setScrollPosition(R.id.listView, scrollPos);
-                }
-            }, 1000);
-*/
-
-            //setting an empty view in case of no data
-            //views.setEmptyView(R.id.list_view, R.id.empty_view);
-
-            //widget.setTextViewText(R.id.textbox, "List setup done");
 
             // Tell the AppWidgetManager to perform an update on the current app widget
             appWidgetManager.updateAppWidget(appWidgetId, widget);
