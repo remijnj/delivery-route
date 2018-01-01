@@ -1,7 +1,6 @@
 package com.tomtom.deliveryroute;
 
 import android.database.DataSetObservable;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -27,18 +26,14 @@ public class Route extends DataSetObservable {
         mCurrentStopIdx = -1;
     }
 
-    public Route(String filename) {
-        mRouteStops = readStopsFromFile(getRouteFileName(filename));
+    public void clear() {
+        mRouteStops.clear();
         mCurrentStopIdx = -1;
+        notifyChanged();
     }
 
-    public Route(String filename, int index) {
-        mRouteStops = readStopsFromFile(getRouteFileName(filename));
-        mCurrentStopIdx = index;
-    }
-
-    public void loadFromFile(String filename) {
-        mRouteStops = readStopsFromFile(getRouteFileName(filename));
+    public void loadFromPath(String absFilename) {
+        mRouteStops = readStopsFromFile(absFilename);
         mCurrentStopIdx = -1;
 
         notifyChanged();
@@ -164,6 +159,7 @@ public class Route extends DataSetObservable {
             while ((line = bufferedReader.readLine()) != null) {
                 final String[] splitline = line.split(",");
                 RouteStop stop = new RouteStop();
+                //Log.d(TAG, "line=[" + line + "]");
 
                 if (splitline.length < 2) {
                     Log.w(TAG, "line found without coordinates (< 2 elements)");
@@ -245,14 +241,5 @@ public class Route extends DataSetObservable {
 
         Log.d(TAG, "< readStopsFromFile");
         return stops;
-    }
-
-    /**
-     * Return the predefined path and name for the file containing the sample track data.
-     * By default, the file must be placed in the DOWNLOADS folder of the device and must be named TrackData.txt.
-     */
-    private String getRouteFileName(String filename) {
-        final String filePath = Environment.getExternalStorageDirectory().getPath();
-        return filePath + File.separator + filename;
     }
 }

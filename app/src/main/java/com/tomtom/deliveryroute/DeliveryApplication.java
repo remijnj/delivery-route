@@ -13,7 +13,8 @@ import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
 public class DeliveryApplication extends Application {
     private static final String TAG = "DeliveryApplication";
     private static String ROUTE_FILENAME = "route.csv";
-    private static Route mRoute = null;
+    private static Route mRoute;
+    private static RouteLoader mRouteLoader;
 
     private static boolean mActivityVisible;
 
@@ -29,26 +30,6 @@ public class DeliveryApplication extends Application {
         mActivityVisible = false;
     }
 
-    private void loadRoute(String filename) {
-        Log.d(TAG, "> loadRoute");
-
-        mRoute.loadFromFile(filename);
-
-        // Go to first stop
-        RouteStop stop = mRoute.nextStop();
-
-        // Plan the route
-        Intent intent = new Intent(this, RouteService.class);
-        intent.putExtra(ROUTESTOP, stop);
-        startService(intent);
-
-        Log.d(TAG, "< loadRoute");
-    }
-
-    private void loadRoute() {
-        loadRoute(ROUTE_FILENAME);
-    }
-
     public static Route getRoute() {
         return mRoute;
     }
@@ -57,6 +38,8 @@ public class DeliveryApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mRoute = new Route();
-        loadRoute();
+        //loadRoute();
+
+        mRouteLoader = new RouteLoader(this, mRoute);
     }
 }
