@@ -44,7 +44,7 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
 
         // Start the detail view
         Intent stopActivityIntent = new Intent(getActivity(), StopActivity.class);
-        stopActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //stopActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         stopActivityIntent.putExtra(StopFragment.ROUTESTOP_ID, position);
 
         getActivity().startActivity(stopActivityIntent);

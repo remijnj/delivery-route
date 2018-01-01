@@ -23,7 +23,7 @@ public class ListClickReceiver extends BroadcastReceiver {
 
         // Start the detail view
         Intent stopActivityIntent = new Intent(context, StopActivity.class);
-        stopActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        stopActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         stopActivityIntent.putExtra(StopFragment.ROUTESTOP_ID, id);
 
         context.startActivity(stopActivityIntent);

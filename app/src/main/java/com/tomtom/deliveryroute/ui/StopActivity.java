@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,11 +13,29 @@ import com.tomtom.deliveryroute.DeliveryApplication;
 import com.tomtom.deliveryroute.R;
 
 public class StopActivity extends AppCompatActivity {
+    private static final String TAG = "StopActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "> onCreate");
         super.onCreate(savedInstanceState);
 
+        createView();
+        Log.d(TAG, "< onCreate");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d(TAG, "> onNewIntent");
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        createView();
+        Log.d(TAG, "< onNewIntent");
+    }
+
+    private void createView() {
+        Log.d(TAG, "> createView");
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -27,6 +46,7 @@ public class StopActivity extends AppCompatActivity {
         fragmentTransaction.commit();
 
         setContentView(R.layout.activity_stop);
+        Log.d(TAG, "< createView");
     }
 
     @Override

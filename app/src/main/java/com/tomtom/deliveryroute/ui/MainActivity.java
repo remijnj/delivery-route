@@ -92,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
     private void launchNavApp() {
         Log.d(TAG, "> launchNavApp");
         final Intent intent = new Intent(NavAppClient.ACTION_LAUNCH_NAVAPP);
