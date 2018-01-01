@@ -41,6 +41,9 @@ public class RouteService extends Service {
     private boolean mOverlayShowing;
     public static final String ROUTESTOP = "ROUTESTOP";
     private RouteStop mStop;
+    public static final int NOTIFY_NEVER = 0;
+    public static final int NOTIFY_ALWAYS = -1;
+
 
     public RouteService() {
     }
@@ -191,8 +194,14 @@ public class RouteService extends Service {
             if (Trip.PlanResult.PLAN_OK.equals(result)) {
                 mTrip = trip;
 
-                // Watch for ETA changes (we want to show an overlay when we get close to a stop)
-                mNavappClient.getTripManager().registerTripProgressListener(mProgressListener);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
+                String notificationDistanceMeters = preferences.getString("notification_distance", "500");
+                int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
+
+                if (notificationDistanceMetersInt != NOTIFY_NEVER) {
+                    // Watch for ETA changes (we want to show an overlay when we get close to a stop)
+                    mNavappClient.getTripManager().registerTripProgressListener(mProgressListener);
+                }
             }
 
             // successfully cancelled
@@ -203,9 +212,6 @@ public class RouteService extends Service {
     };
 
     private Trip.ProgressListener mProgressListener = new Trip.ProgressListener() {
-        public static final int NOTIFY_NEVER = 0;
-        public static final int NOTIFY_ALWAYS = -1;
-
         @Override
         public void onTripArrival(Trip trip) {
             Log.d(TAG, "> onTripArrival");
