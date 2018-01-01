@@ -25,7 +25,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     private int mAppWidgetId;
     private DeliveryApplication mApplication;
 
-    public ListViewFactory(DeliveryApplication application, final Context context, Intent intent) {
+    ListViewFactory(DeliveryApplication application, final Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);

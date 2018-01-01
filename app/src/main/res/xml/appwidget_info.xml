@@ -1,15 +1,8 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="40dp"
-    android:minHeight="200dp"
-    android:updatePeriodMillis="3000"
     android:initialLayout="@layout/listwidget"
-    android:resizeMode="horizontal|vertical"
+    android:minHeight="200dp"
+    android:minWidth="40dp"
     android:previewImage="@drawable/deliveryroute_preview"
-    android:widgetCategory="home_screen">
-</appwidget-provider>
-
-<!--
-android:previewImage="@drawable/widget_preview"
-android:configure="com.tomtom.deliveryroute.ListWidgetConfigure"
-
--->
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="3000"
+    android:widgetCategory="home_screen"></appwidget-provider>
