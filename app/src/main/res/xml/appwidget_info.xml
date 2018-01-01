@@ -4,6 +4,7 @@
     android:updatePeriodMillis="3000"
     android:initialLayout="@layout/listwidget"
     android:resizeMode="horizontal|vertical"
+    android:previewImage="@drawable/deliveryroute_preview"
     android:widgetCategory="home_screen">
 </appwidget-provider>
 
