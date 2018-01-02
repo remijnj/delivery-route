@@ -3,10 +3,8 @@ package com.tomtom.deliveryroute.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -20,43 +18,6 @@ import com.tomtom.deliveryroute.R;
 
 public class ListWidgetProvider extends AppWidgetProvider {
     private final static String TAG = "ListWidgetProvider";
-    private int X = 0;
-
-    private static void updateAll(Context context) {
-        final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-        final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
-
-        Intent intent = new Intent(context, ListWidgetProvider.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetManager.getAppWidgetIds(cn));
-        context.sendBroadcast(intent);
-    }
-
-    @Override
-    public void onEnabled(final Context context) {
-        Log.d(TAG, "> onEnabled");
-
-        // TODO: maybe this needs to be moved to the onUpdate call or into another file altogether
-        // now we need to re-add the widget on every app update to make this monitoring work
-        DeliveryApplication.getRoute().registerObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                Log.d(TAG, "> onChanged");
-
-                super.onChanged();
-                final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-                final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
-
-                // notify widget of changes in the listview (content)
-                widgetManager.notifyAppWidgetViewDataChanged(widgetManager.getAppWidgetIds(cn), R.id.listView);
-
-                updateAll(context);
-
-                Log.d(TAG, "< onChanged");
-            }
-        });
-        Log.d(TAG, "< onEnabled");
-    }
 
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "> onUpdate");

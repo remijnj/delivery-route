@@ -29,22 +29,24 @@ public class RouteLoader {
     private Route mRoute;
     private File mLoadedFile;
     private Handler mHandler;
+    private FileObserver mObserver;
 
     public RouteLoader(final Context context, final Route route) {
-        FileObserver observer;
         mContext = context;
         mRoute = route;
         mHandler = new Handler(Looper.getMainLooper());
 
         loadLatestFile();
 
-        observer = new FileObserver(PATH_ROOT) {
+        mObserver = new FileObserver(PATH_ROOT) {
             @Override
             public void onEvent(final int event, String filename) {
                 final File file = new File(PATH_ROOT + File.separator + filename);
+                Log.d(TAG, "> onEvent (event=" + event + ")");
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d(TAG, "in runnable belonging to onEvent");
                         if (event == FileObserver.CLOSE_WRITE && isCsvFile(file)) {
                             Log.d(TAG, "CLOSE_WRITE [" + PATH_ROOT + File.separator + file + "]");
                             load(file);
@@ -55,6 +57,8 @@ public class RouteLoader {
                                         Log.d(TAG, "current route has been DELETED");
                                         mRoute.clear();
                                         loadLatestFile();
+                                    } else {
+                                        Log.d(TAG, "file deleted but this was not our loaded file (" + file.getCanonicalPath() + ")");
                                     }
                                 } catch (final IOException ex) {
                                     Log.w(TAG, "IOException trying to compare " + file.getPath() + " and " + mLoadedFile.getPath());
@@ -63,9 +67,10 @@ public class RouteLoader {
                         }
                     }
                 });
+                Log.d(TAG, "< onEvent");
             }
         };
-        observer.startWatching(); // START OBSERVING
+        mObserver.startWatching(); // START OBSERVING
     }
 
     private void loadLatestFile() {

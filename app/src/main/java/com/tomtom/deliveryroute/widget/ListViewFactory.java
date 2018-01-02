@@ -1,8 +1,10 @@
 package com.tomtom.deliveryroute.widget;
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -30,8 +32,35 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        mApplication = application;
+        mApplication.getRoute().registerObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                Log.d(TAG, "> onChanged");
+
+                super.onChanged();
+                final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+                final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
+
+                // notify widget of changes in the listview (content)
+                widgetManager.notifyAppWidgetViewDataChanged(widgetManager.getAppWidgetIds(cn), R.id.listView);
+
+                updateAll(context);
+
+                Log.d(TAG, "< onChanged");
+            }
+        });
     }
+
+    private static void updateAll(Context context) {
+        final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
+        final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
+
+        Intent intent = new Intent(context, ListWidgetProvider.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetManager.getAppWidgetIds(cn));
+        context.sendBroadcast(intent);
+    }
+
 
     @Override
     public int getCount() {
