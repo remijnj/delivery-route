@@ -1,10 +1,8 @@
 package com.tomtom.deliveryroute;
 
 import android.app.Application;
-import android.content.Intent;
-import android.util.Log;
-
-import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * Created by joost on 12/09/17.
@@ -41,5 +39,10 @@ public class DeliveryApplication extends Application {
         //loadRoute();
 
         mRouteLoader = new RouteLoader(this, mRoute);
+    }
+
+    public boolean getFormatUS() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return preferences.getBoolean("US_address_format", true);
     }
 }

@@ -1,5 +1,7 @@
 package com.tomtom.deliveryroute;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 
 /**
@@ -102,31 +104,47 @@ public class RouteStop implements Serializable {
     }
 
     // maybe we should use https://github.com/googlei18n/libaddressinput here
+    // See: https://stackoverflow.com/questions/11269172/address-formatting-based-on-locale-in-android
     //
-    public String getStopTextUI() {
+    public String getStopTextUI(boolean formatUS) {
         StringBuilder stopString = new StringBuilder();
-        if (mName != null) {
+        if (!TextUtils.isEmpty(mName)) {
             stopString.append(mName);
-        }
-        if (mStreet != null) {
             stopString.append("\n");
-            stopString.append(mStreet);
         }
-        if (mHouseNumber != null) {
-            stopString.append(" ");
-            stopString.append(mHouseNumber);
+        if (formatUS) {
+            if (!TextUtils.isEmpty(mHouseNumber)) {
+                stopString.append(mHouseNumber);
+            }
+            if (!TextUtils.isEmpty(mStreet)) {
+                stopString.append(" ");
+                stopString.append(mStreet);
+            }
+        } else {
+            if (!TextUtils.isEmpty(mStreet)) {
+                stopString.append(mStreet);
+                stopString.append(" ");
+            }
+            if (!TextUtils.isEmpty(mHouseNumber)) {
+                stopString.append(mHouseNumber);
+            }
         }
-        if (mPostalCode != null) {
+        if (!TextUtils.isEmpty(mHouseNumber) || !TextUtils.isEmpty(mStreet)) {
             stopString.append("\n");
-            stopString.append(mPostalCode);
         }
-        if (mPlacename != null) {
-            stopString.append(" ");
-            stopString.append(mPlacename);
-        }
-        if (mExtra != null) {
+        if (!TextUtils.isEmpty(mPostalCode) || !TextUtils.isEmpty(mPlacename)) {
+            if (!TextUtils.isEmpty(mPostalCode)) {
+                stopString.append(mPostalCode);
+                stopString.append(" ");
+            }
+            if (!TextUtils.isEmpty(mPlacename)) {
+                stopString.append(mPlacename);
+            }
             stopString.append("\n");
+        }
+        if (!TextUtils.isEmpty(mExtra)) {
             stopString.append(mExtra);
+            stopString.append("\n");
         }
 
         return stopString.toString();

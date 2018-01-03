@@ -149,7 +149,7 @@ public class StopFragment extends Fragment {
     private void updateUI() {
         // set stop text
         TextView text = (TextView) mRootView.findViewById(R.id.text_stop);
-        text.setText(mStop.getStopTextUI());
+        text.setText(mStop.getStopTextUI(mApplication.getFormatUS()));
 
         // only show the Drive button when this is not yet the current destination
         Button driveButton = (Button) mRootView.findViewById(R.id.drive_button);

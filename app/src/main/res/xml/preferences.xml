@@ -10,6 +10,10 @@
         android:summary=""
         android:title="@string/pref_about" />
 
+    <CheckBoxPreference
+        android:title="@string/us_address_format"
+        android:key="US_address_format"
+        android:defaultValue="true" />
 
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <ListPreference
@@ -26,6 +30,7 @@
         android:title="@string/jump_to_home_on_plan"
         android:key="home_on_plan"
         android:defaultValue="true" />
+
 <!--
     <PreferenceScreen
         android:key="list_elements"

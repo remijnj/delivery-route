@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ class RouteListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         RouteStop stop = mApplication.getRoute().getStop(position);
+        boolean formatUS = mApplication.getFormatUS();
         ViewHolder holder;
         Log.d(TAG, "> getView(" + position + ")");
 
@@ -79,7 +81,7 @@ class RouteListAdapter extends BaseAdapter {
         Log.d(TAG, "housenumber=" + stop.getHouseNumber());
         Log.d(TAG, "placename=" + stop.getPlacename());
 
-        if (stop.getName() != null && !stop.getName().isEmpty()) {
+        if (!TextUtils.isEmpty(stop.getName())) {
             holder.mName.setText(stop.getName());
             holder.mName.setTextColor(textColor);
             holder.mName.setVisibility(View.VISIBLE);
@@ -87,9 +89,15 @@ class RouteListAdapter extends BaseAdapter {
             holder.mName.setVisibility(View.GONE);
         }
 
-        if (stop.getStreet() != null && !stop.getStreet().isEmpty()) {
-            SpannableString streetAddr = new SpannableString(stop.getStreet() + " " + stop.getHouseNumber());
-            streetAddr.setSpan(new RelativeSizeSpan(1.3f), stop.getStreet().length(), streetAddr.length(), 0);
+        if (!TextUtils.isEmpty(stop.getStreet())) {
+            SpannableString streetAddr;
+            if (formatUS) {
+                streetAddr = new SpannableString(stop.getHouseNumber() + " " + stop.getStreet());
+                streetAddr.setSpan(new RelativeSizeSpan(1.3f), 0, stop.getHouseNumber().length(), 0);
+            } else {
+                streetAddr = new SpannableString(stop.getStreet() + " " + stop.getHouseNumber());
+                streetAddr.setSpan(new RelativeSizeSpan(1.3f), stop.getStreet().length(), streetAddr.length(), 0);
+            }
             holder.mStreet.setText(streetAddr);
             holder.mStreet.setTextColor(textColor);
             holder.mStreet.setVisibility(View.VISIBLE);
@@ -98,7 +106,7 @@ class RouteListAdapter extends BaseAdapter {
             holder.mStreet.setVisibility(View.INVISIBLE); // make it keep taking up space if not existing
         }
 
-        if (stop.getPlacename() != null && !stop.getPlacename().isEmpty()) {
+        if (!TextUtils.isEmpty(stop.getPlacename())) {
             holder.mPlacename.setText(stop.getPlacename());
             holder.mPlacename.setVisibility(View.VISIBLE);
             holder.mPlacename.setTextColor(textColor);
