@@ -1,0 +1,19 @@
+The file format is .csv and the fields are as follows
+
+1: latitude
+2: longitude
+3: name
+4: street
+5: housenumber
+6: placename
+7: postal code
+8: special marker (? = bad address)
+9: extra info
+
+Some example lines:
+52.3651888,4.9151929,Artis,Plantage Kerklaan,38-40,Amsterdam,,,2 packages (heavy)
+51.9320488,4.4708889,Coppi,Bergweg,316,Rotterdam,3032 BB
+0,0,Girassol,Weespzijde,135,Amsterdam,,?,bad address test
+
+If latitude and longitude are not filled in the address line will not be loaded (ignored). For the rest you can leave out all fields. 
+Leaving out name and street/housenumber is not advised however.
