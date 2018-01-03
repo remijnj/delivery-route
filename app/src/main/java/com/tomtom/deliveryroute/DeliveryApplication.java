@@ -12,7 +12,7 @@ public class DeliveryApplication extends Application {
     private static final String TAG = "DeliveryApplication";
     private static String ROUTE_FILENAME = "route.csv";
     private static Route mRoute;
-    private static RouteLoader mRouteLoader;
+    private RouteLoader mRouteLoader;
 
     private static boolean mActivityVisible;
 
@@ -36,7 +36,6 @@ public class DeliveryApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mRoute = new Route();
-        //loadRoute();
 
         mRouteLoader = new RouteLoader(this, mRoute);
     }
