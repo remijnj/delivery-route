@@ -34,16 +34,82 @@ import com.tomtom.navapp.Trip;
  * delivery information.
  */
 public class RouteService extends Service {
-    private static final String TAG = "RouteService";
-    private static final int FOREGROUND_ID = 129;
-    private NavAppClient mNavappClient = null;
-    private Trip mTrip;
-    private boolean mOverlayShowing;
     public static final String ROUTESTOP = "ROUTESTOP";
-    private RouteStop mStop;
     public static final int NOTIFY_NEVER = 0;
     public static final int NOTIFY_ALWAYS = -1;
+    private static final String TAG = "RouteService";
+    private static final int FOREGROUND_ID = 129;
+    private WindowManager mWindowManager;
+    private NavAppClient mNavappClient = null;
+    private final ErrorCallback mErrorCallback = new ErrorCallback() {
+        @Override
+        public void onError(NavAppError error) {
+            Log.e(TAG, "onError(" + error.getErrorMessage() + ")\n" + error.getStackTraceString());
+            Toast toast = Toast.makeText(RouteService.this, error.getErrorMessage(), Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            mNavappClient = null;
+        }
+    };
+    private Trip mTrip;
+    private boolean mOverlayShowing;
+    private RouteStop mStop;
+    private View mFloatDialogView;
+    private Trip.ProgressListener mProgressListener = new Trip.ProgressListener() {
+        @Override
+        public void onTripArrival(Trip trip) {
+            Log.d(TAG, "> onTripArrival");
+            Log.d(TAG, "< onTripArrival");
+        }
 
+        @Override
+        public void onTripProgress(Trip trip, long eta, int distanceRemaining) {
+            //Log.d(TAG, "> onTripProgress");
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
+            String notificationDistanceMeters = preferences.getString("notification_distance", "500");
+            int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
+
+            //Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
+            if (notificationDistanceMetersInt == NOTIFY_NEVER) {
+                return;
+            }
+
+            // do not show overlay if overlay is already showing or if MainActivity is in the front
+            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible()) {
+                if (notificationDistanceMetersInt == NOTIFY_ALWAYS || distanceRemaining < notificationDistanceMetersInt) {
+                    showOverlay();
+                }
+            }
+
+            //Log.d(TAG, "< onTripProgress");
+        }
+    };
+    private Trip.PlanListener mPlanListener = new Trip.PlanListener() {
+        @Override
+        public void onTripPlanResult(Trip trip, Trip.PlanResult result) {
+            Log.d(TAG, "onTripPlanResult result[" + result + "]");
+
+            // successfully planned
+            if (Trip.PlanResult.PLAN_OK.equals(result)) {
+                mTrip = trip;
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
+                String notificationDistanceMeters = preferences.getString("notification_distance", "500");
+                int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
+
+                if (notificationDistanceMetersInt != NOTIFY_NEVER) {
+                    // Watch for ETA changes (we want to show an overlay when we get close to a stop)
+                    mNavappClient.getTripManager().registerTripProgressListener(mProgressListener);
+                }
+            }
+
+            // successfully cancelled
+            if (Trip.PlanResult.TRIP_CANCELLED.equals(result)) {
+                mTrip = null;
+            }
+        }
+    };
 
     public RouteService() {
     }
@@ -56,6 +122,8 @@ public class RouteService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "> onCreate");
+
+        mWindowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 
         Intent mainIntent = new Intent(this, MainActivity.class);
         PendingIntent mainPendingIntent =
@@ -103,7 +171,6 @@ public class RouteService extends Service {
         Log.d(TAG, "< onDestroy");
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "> onStartCommand");
@@ -113,6 +180,9 @@ public class RouteService extends Service {
         }
 
         if (mStop != null) {
+            // dismiss overlay (because it is for the current route and we are now planning a new one)
+            dismissOverlay();
+
             // plan the route to the next stop in the list
             planRouteToStop(mStop, mPlanListener);
         }
@@ -174,95 +244,31 @@ public class RouteService extends Service {
         return true;
     }
 
-    private final ErrorCallback mErrorCallback = new ErrorCallback() {
-        @Override
-        public void onError(NavAppError error) {
-            Log.e(TAG, "onError(" + error.getErrorMessage() + ")\n" + error.getStackTraceString());
-            Toast toast = Toast.makeText(RouteService.this, error.getErrorMessage(), Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-            mNavappClient = null;
-        }
-    };
-
-    private Trip.PlanListener mPlanListener = new Trip.PlanListener() {
-        @Override
-        public void onTripPlanResult(Trip trip, Trip.PlanResult result) {
-            Log.d(TAG, "onTripPlanResult result[" + result + "]");
-
-            // successfully planned
-            if (Trip.PlanResult.PLAN_OK.equals(result)) {
-                mTrip = trip;
-
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
-                String notificationDistanceMeters = preferences.getString("notification_distance", "500");
-                int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
-
-                if (notificationDistanceMetersInt != NOTIFY_NEVER) {
-                    // Watch for ETA changes (we want to show an overlay when we get close to a stop)
-                    mNavappClient.getTripManager().registerTripProgressListener(mProgressListener);
-                }
-            }
-
-            // successfully cancelled
-            if (Trip.PlanResult.TRIP_CANCELLED.equals(result)) {
-                mTrip = null;
-            }
-        }
-    };
-
-    private Trip.ProgressListener mProgressListener = new Trip.ProgressListener() {
-        @Override
-        public void onTripArrival(Trip trip) {
-            Log.d(TAG, "> onTripArrival");
-            Log.d(TAG, "< onTripArrival");
-        }
-
-        @Override
-        public void onTripProgress(Trip trip, long eta, int distanceRemaining) {
-            //Log.d(TAG, "> onTripProgress");
-
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(RouteService.this);
-            String notificationDistanceMeters = preferences.getString("notification_distance", "500");
-            int notificationDistanceMetersInt = Integer.parseInt(notificationDistanceMeters);
-
-            //Log.d(TAG, "eta=" + eta + " distanceRemaining=" + distanceRemaining + " meters" + " notification_distance=" + notificationDistanceMeters);
-            if (notificationDistanceMetersInt == NOTIFY_NEVER) {
-                return;
-            }
-
-            // do not show overlay if overlay is already showing or if MainActivity is in the front
-            if (!mOverlayShowing && !DeliveryApplication.isActivityVisible()) {
-                if (notificationDistanceMetersInt == NOTIFY_ALWAYS || distanceRemaining < notificationDistanceMetersInt) {
-                    showOverlay();
-                }
-            }
-
-            //Log.d(TAG, "< onTripProgress");
-        }
-    };
-
     private void showOverlay() {
         Log.d(TAG, "> showOverlay");
 
-        final WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        if (mWindowManager == null) {
+            Log.e(TAG, "error showing Overlay (wm==null)");
+            return;
+        }
+
         WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
         wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         wmParams.format = PixelFormat.RGBA_8888;
         wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        wmParams.gravity = Gravity.LEFT | Gravity.TOP;
+        wmParams.gravity = Gravity.START | Gravity.TOP;
 
         LayoutInflater mInflater = LayoutInflater.from(this);
-        final View floatDialogView = mInflater.inflate(R.layout.arrival_dialog, null);
+        mFloatDialogView = mInflater.inflate(R.layout.arrival_dialog, null);
 
         final String stopName = mStop.getName();
         final String stopStreet = mStop.getStreet();
         final String stopHouseNumber = mStop.getHouseNumber();
         String arrivalString = "";
 
-        TextView arrival_text = (TextView) floatDialogView.findViewById(R.id.arrival_text);
+        TextView arrival_text = (TextView) mFloatDialogView.findViewById(R.id.arrival_text);
         if (stopName != null && !stopName.isEmpty()) {
             arrivalString = stopName + "\n";
         }
@@ -271,19 +277,18 @@ public class RouteService extends Service {
         }
         arrival_text.setText(arrivalString);
 
-        TextView arrival_text_housenumber = (TextView) floatDialogView.findViewById(R.id.arrival_text_housenumber);
+        TextView arrival_text_housenumber = (TextView) mFloatDialogView.findViewById(R.id.arrival_text_housenumber);
         if (stopHouseNumber != null) {
             arrival_text_housenumber.setText(stopHouseNumber);
         }
 
-        floatDialogView.setOnClickListener(new View.OnClickListener() {
+        mFloatDialogView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "> onClick");
 
                 // Dismiss this view
-                wm.removeView(floatDialogView);
-                mOverlayShowing = false;
+                dismissOverlay();
 
                 // Start the detail view
                 Intent intent = new Intent(RouteService.this, StopActivity.class);
@@ -294,9 +299,25 @@ public class RouteService extends Service {
             }
         });
 
-        wm.addView(floatDialogView, wmParams);
+        mWindowManager.addView(mFloatDialogView, wmParams);
         mOverlayShowing = true;
 
         Log.d(TAG, "< showOverlay");
+    }
+
+    private void dismissOverlay() {
+        Log.d(TAG, "> dismissOverlay");
+
+        if (!mOverlayShowing) {
+            return;
+        }
+
+        if (mWindowManager != null && mFloatDialogView != null) {
+            mWindowManager.removeView(mFloatDialogView);
+            mOverlayShowing = false;
+            mFloatDialogView = null;
+        }
+
+        Log.d(TAG, "< dismissOverlay");
     }
 }
