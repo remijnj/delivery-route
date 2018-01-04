@@ -8,6 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import com.tomtom.deliveryroute.R;
+import com.tomtom.navapp.Build.Version;
 
 import java.util.Locale;
 
@@ -46,7 +47,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             try {
                 PackageInfo pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
-                String aboutString = String.format(Locale.ENGLISH, "%s %s (%d)", getString(R.string.app_name), pInfo.versionName, pInfo.versionCode);
+                String aboutString = String.format(Locale.ENGLISH, "%s %s (%d) (NavApp API %d)", getString(R.string.app_name), pInfo.versionName, pInfo.versionCode, Version.API_LEVEL);
                 about.setSummary(aboutString);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
