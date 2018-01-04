@@ -34,13 +34,21 @@ import com.tomtom.navapp.Trip;
  * delivery information.
  */
 public class RouteService extends Service {
+    private static final String TAG = "RouteService";
+
     public static final String ROUTESTOP = "ROUTESTOP";
     public static final int NOTIFY_NEVER = 0;
     public static final int NOTIFY_ALWAYS = -1;
-    private static final String TAG = "RouteService";
     private static final int FOREGROUND_ID = 129;
-    private WindowManager mWindowManager;
+
     private NavAppClient mNavappClient = null;
+    private Trip mTrip;
+    private RouteStop mStop;
+    private WindowManager mWindowManager;
+    private View mFloatDialogView;
+    private boolean mOverlayShowing;
+    private boolean mPlanningRoute;
+
     private final ErrorCallback mErrorCallback = new ErrorCallback() {
         @Override
         public void onError(NavAppError error) {
@@ -51,10 +59,7 @@ public class RouteService extends Service {
             mNavappClient = null;
         }
     };
-    private Trip mTrip;
-    private boolean mOverlayShowing;
-    private RouteStop mStop;
-    private View mFloatDialogView;
+
     private Trip.ProgressListener mProgressListener = new Trip.ProgressListener() {
         @Override
         public void onTripArrival(Trip trip) {
@@ -108,6 +113,31 @@ public class RouteService extends Service {
             if (Trip.PlanResult.TRIP_CANCELLED.equals(result)) {
                 mTrip = null;
             }
+
+            mPlanningRoute = false;
+        }
+    };
+
+    private Trip.Listener mTripListener = new Trip.Listener() {
+        @Override
+        public void onTripActive(Trip trip) {
+            Log.d(TAG, "> mTripListener.onTripActive()");
+
+            Log.d(TAG, "trip destination=" + (trip == null ? "<none>" : trip.getDestination().getAddress()));
+            if (mPlanningRoute) {
+                Log.d(TAG, "this is OK, we called planTrip");
+            } else {
+                Log.d(TAG, "this is NOT OK. Not expecting a new route.");
+                // now we need to cancel the route and stuff and unset current destination, tricky..
+
+                // dismiss the overlay and remove the progress listener
+                Log.d(TAG, "dismiss the overlay and remove trip progress listeners");
+                dismissOverlay();
+                mNavappClient.getTripManager().unregisterTripProgressListener(mProgressListener);
+
+                // TODO: Perhaps also unset the current destination on the Route but this is too invasive for now
+            }
+            Log.d(TAG, "< mTripListener.onTripActive()");
         }
     };
 
@@ -145,6 +175,9 @@ public class RouteService extends Service {
 
         // Create the NavAppClient
         createNavAppClient();
+
+        // set a listener for trips
+        mNavappClient.getTripManager().registerTripListener(mTripListener);
 
         Log.d(TAG, "< onCreate");
     }
@@ -198,6 +231,8 @@ public class RouteService extends Service {
      * Plans route to next stop
      */
     private void planRouteToStop(RouteStop stop, Trip.PlanListener planListener) {
+        Log.d(TAG, "> planRouteToStop");
+
         double lat = stop.getLatitude();
         double lon = stop.getLongitude();
         Routeable dest = mNavappClient.makeRouteable(lat, lon);
@@ -206,7 +241,9 @@ public class RouteService extends Service {
         Log.d(TAG, "\taddress=[" + dest.getAddress() + "]");
         Log.d(TAG, "\tname=[" + stop.getName() + "]");
 
+        mPlanningRoute = true;
         mNavappClient.getTripManager().planTrip(dest, planListener);
+
 
         String destname = stop.getName();
         if (destname == null) {
@@ -226,7 +263,7 @@ public class RouteService extends Service {
             startActivity(homeIntent);
         }
 
-        Log.d(TAG, "< planRouteToNextStop");
+        Log.d(TAG, "< planRouteToStop");
     }
 
     private boolean createNavAppClient() {
