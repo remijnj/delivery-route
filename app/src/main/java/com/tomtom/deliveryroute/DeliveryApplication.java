@@ -5,12 +5,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 /**
- * Created by joost on 12/09/17.
+ * DeliveryApplication is the main Application context. This holds the RouteLoader and the Route.
+ * This is done so we have access from wherever we need it and we can monitor the route for data
+ * changes.
  */
 
 public class DeliveryApplication extends Application {
-    private static final String TAG = "DeliveryApplication";
-    private static String ROUTE_FILENAME = "route.csv";
     private static Route mRoute;
     private RouteLoader mRouteLoader;
 

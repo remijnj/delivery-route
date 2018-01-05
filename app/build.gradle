@@ -7,8 +7,8 @@ android {
         applicationId "com.tomtom.deliveryroute"
         minSdkVersion 18
         targetSdkVersion 18
-        versionCode 10
-        versionName "1.92"
+        versionCode 11
+        versionName "1.95"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

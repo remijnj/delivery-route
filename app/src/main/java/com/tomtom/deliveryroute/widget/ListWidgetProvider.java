@@ -17,7 +17,6 @@ import com.tomtom.deliveryroute.R;
 /**
  * This is the ListWidget provider. This sets up the widget and updates the view.
  */
-
 public class ListWidgetProvider extends AppWidgetProvider {
     private final static String TAG = "ListWidgetProvider";
     private static HandlerThread mWorkerThread;

@@ -18,7 +18,8 @@ import com.tomtom.deliveryroute.R;
 import com.tomtom.deliveryroute.RouteStop;
 
 /**
- * Created by remijnj on 27-12-17.
+ * RouteListAdapter is the data provider for the main screen's listview.
+ *
  */
 
 class RouteListAdapter extends BaseAdapter {
@@ -26,10 +27,10 @@ class RouteListAdapter extends BaseAdapter {
     private final DeliveryApplication mApplication;
     private LayoutInflater mInflater;
 
-    public RouteListAdapter(DeliveryApplication application) {
+    RouteListAdapter(DeliveryApplication application) {
         super();
         mApplication = application;
-        mApplication.getRoute().registerObserver(new DataSetObserver() {
+        DeliveryApplication.getRoute().registerObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 Log.d(TAG, "onChanged");
@@ -43,13 +44,13 @@ class RouteListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.d(TAG, "getCount()=" + mApplication.getRoute().size());
-        return mApplication.getRoute().size();
+        Log.d(TAG, "getCount()=" + DeliveryApplication.getRoute().size());
+        return DeliveryApplication.getRoute().size();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        RouteStop stop = mApplication.getRoute().getStop(position);
+        RouteStop stop = DeliveryApplication.getRoute().getStop(position);
         boolean formatUS = mApplication.getFormatUS();
         ViewHolder holder;
         Log.d(TAG, "> getView(" + position + ")");
@@ -67,7 +68,7 @@ class RouteListAdapter extends BaseAdapter {
         }
 
         int textColor = Color.LTGRAY;
-        if (position == mApplication.getRoute().getCurrentStopIndex()) {
+        if (position == DeliveryApplication.getRoute().getCurrentStopIndex()) {
             // current stop has to be highlighted
             textColor = Color.GREEN;
         } else if (stop.isDone()) {

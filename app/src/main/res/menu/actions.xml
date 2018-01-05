@@ -10,7 +10,6 @@
         android:title="@string/action_clear"
         app:showAsAction="ifRoom" />
     -->
-
     <!-- "Load Route", should appear as action button if possible -->
     <!--
     <item

@@ -1,5 +1,6 @@
 package com.tomtom.deliveryroute;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -177,7 +178,9 @@ public class RouteService extends Service {
         createNavAppClient();
 
         // set a listener for trips
-        mNavappClient.getTripManager().registerTripListener(mTripListener);
+        if (mNavappClient != null) {
+            mNavappClient.getTripManager().registerTripListener(mTripListener);
+        }
 
         Log.d(TAG, "< onCreate");
     }
@@ -195,11 +198,13 @@ public class RouteService extends Service {
         //       route has been cancelled. We need to move the close to the planlistener or even try to
         //       cancel the route before the onDestroy() happens somehow.
         //
-        mNavappClient.getTripManager().cancelTrip(mTrip, mPlanListener);
+        if (mNavappClient != null) {
+            mNavappClient.getTripManager().cancelTrip(mTrip, mPlanListener);
 
-        // Close the navapp client connection
-        mNavappClient.close();
-        mNavappClient = null;
+            // Close the navapp client connection
+            mNavappClient.close();
+            mNavappClient = null;
+        }
 
         Log.d(TAG, "< onDestroy");
     }
@@ -235,6 +240,11 @@ public class RouteService extends Service {
 
         double lat = stop.getLatitude();
         double lon = stop.getLongitude();
+
+        if (mNavappClient == null) {
+            Log.e(TAG, "planRouteToStop() called while navapp client is not available");
+            return;
+        }
         Routeable dest = mNavappClient.makeRouteable(lat, lon);
 
         Log.d(TAG, "planning route to [" + dest.getLatitude() + ", " + dest.getLongitude() + "]");
@@ -243,7 +253,6 @@ public class RouteService extends Service {
 
         mPlanningRoute = true;
         mNavappClient.getTripManager().planTrip(dest, planListener);
-
 
         String destname = stop.getName();
         if (destname == null) {
@@ -266,7 +275,15 @@ public class RouteService extends Service {
         Log.d(TAG, "< planRouteToStop");
     }
 
-    private boolean createNavAppClient() {
+    // this function can later be used to go to full-screen navapp on route planning
+    private void launchNavApp() {
+        Log.d(TAG, "> launchNavApp");
+        final Intent intent = new Intent(NavAppClient.ACTION_LAUNCH_NAVAPP);
+        startActivity(intent);
+        Log.d(TAG, "< launchNavApp");
+    }
+
+    private void createNavAppClient() {
         Log.d(TAG, "> createNavAppClient");
         if (mNavappClient == null) {
             // Create the NavAppClient
@@ -274,13 +291,12 @@ public class RouteService extends Service {
                 mNavappClient = NavAppClient.Factory.make(this, mErrorCallback);
             } catch (RuntimeException e) {
                 Log.e(TAG, "Failed creating NavAppClient", e);
-                return false;
             }
         }
         Log.d(TAG, "< createNavAppClient");
-        return true;
     }
 
+    @SuppressLint("InflateParams")
     private void showOverlay() {
         Log.d(TAG, "> showOverlay");
 

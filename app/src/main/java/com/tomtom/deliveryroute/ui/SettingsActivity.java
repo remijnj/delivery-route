@@ -1,6 +1,5 @@
 package com.tomtom.deliveryroute.ui;
 
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;

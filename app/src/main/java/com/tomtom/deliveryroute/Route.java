@@ -32,14 +32,14 @@ public class Route extends DataSetObservable {
         notifyChanged();
     }
 
-    public void loadFromPath(String absFilename) {
+    void loadFromPath(String absFilename) {
         mRouteStops = readStopsFromFile(absFilename);
         mCurrentStopIdx = -1;
 
         notifyChanged();
     }
 
-    public RouteStop nextStop() {
+    RouteStop nextStop() {
         Log.d(TAG, "> nextStop");
 
         if (mRouteStops != null && mRouteStops.size() <= (mCurrentStopIdx + 1)) {
@@ -80,7 +80,7 @@ public class Route extends DataSetObservable {
      *
      * @return : null if no route is loaded or an empty route is loaded.
      */
-    public RouteStop getCurrentStop() {
+    private RouteStop getCurrentStop() {
         if (mRouteStops == null) {
             Log.w(TAG, "planRouteToNextStop(): no route loaded");
             return null;
@@ -157,69 +157,12 @@ public class Route extends DataSetObservable {
             bufferedReader = new BufferedReader(fileReader);
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                final String[] splitline = line.split(",");
-                RouteStop stop = new RouteStop();
-                //Log.d(TAG, "line=[" + line + "]");
-
-                if (splitline.length < 2) {
-                    Log.w(TAG, "line found without coordinates (< 2 elements)");
-                    Log.w(TAG, "line=[" + line + "]");
-                    continue; // don't add it!!
+                RouteStop stop = stopFromLine(line);
+                if (stop != null) {
+                    stops.add(stop);
                 }
-                if (splitline.length >= 2) {
-                    final double lat = Double.parseDouble(splitline[0].trim());
-                    final double lon = Double.parseDouble(splitline[1].trim());
-                    stop.setLatitude(lat);
-                    stop.setLongitude(lon);
-                }
-
-                // name
-                if (splitline.length >= 3) {
-                    final String name = splitline[2].trim();
-                    stop.setName(name);
-                }
-
-                // street
-                if (splitline.length >= 4) {
-                    final String street = splitline[3].trim();
-                    stop.setStreet(street);
-                }
-
-                // housenumber
-                if (splitline.length >= 5) {
-                    final String housenumber = splitline[4].trim();
-                    stop.setHouseNumber(housenumber);
-                }
-
-                // placename
-                if (splitline.length >= 6) {
-                    final String placename = splitline[5].trim();
-                    stop.setPlacename(placename);
-                }
-
-                // postal code
-                if (splitline.length >= 7) {
-                    final String postalCode = splitline[6].trim();
-                    stop.setPostalCode(postalCode);
-                }
-
-                // special marker (? = bad address)
-                if (splitline.length >= 8) {
-                    final String marker = splitline[7].trim();
-                    if ("?".equals(marker)) {
-                        stop.setBadAddress(true);
-                    }
-                }
-
-                // extra info
-                if (splitline.length >= 9) {
-                    final String extra = splitline[8].trim();
-                    stop.setExtra(extra);
-                }
-
-                stops.add(stop);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             Log.e(TAG, "Error reading input file [" + sourceFile.getPath() + "]", e);
         } finally {
             // Release of allocated resources
@@ -241,5 +184,69 @@ public class Route extends DataSetObservable {
 
         Log.d(TAG, "< readStopsFromFile");
         return stops;
+    }
+
+    private RouteStop stopFromLine(final String line) {
+        final String[] splitline = line.split(",");
+        RouteStop stop = new RouteStop();
+
+        if (splitline.length < 2) {
+            Log.w(TAG, "line found without coordinates (< 2 elements)");
+            Log.w(TAG, "line=[" + line + "]");
+            return null;
+        }
+
+        if (splitline.length >= 2) {
+            final double lat = Double.parseDouble(splitline[0].trim());
+            final double lon = Double.parseDouble(splitline[1].trim());
+            stop.setLatitude(lat);
+            stop.setLongitude(lon);
+        }
+
+        // name
+        if (splitline.length >= 3) {
+            final String name = splitline[2].trim();
+            stop.setName(name);
+        }
+
+        // street
+        if (splitline.length >= 4) {
+            final String street = splitline[3].trim();
+            stop.setStreet(street);
+        }
+
+        // housenumber
+        if (splitline.length >= 5) {
+            final String housenumber = splitline[4].trim();
+            stop.setHouseNumber(housenumber);
+        }
+
+        // placename
+        if (splitline.length >= 6) {
+            final String placename = splitline[5].trim();
+            stop.setPlacename(placename);
+        }
+
+        // postal code
+        if (splitline.length >= 7) {
+            final String postalCode = splitline[6].trim();
+            stop.setPostalCode(postalCode);
+        }
+
+        // special marker (? = bad address)
+        if (splitline.length >= 8) {
+            final String marker = splitline[7].trim();
+            if ("?".equals(marker)) {
+                stop.setBadAddress(true);
+            }
+        }
+
+        // extra info
+        if (splitline.length >= 9) {
+            final String extra = splitline[8].trim();
+            stop.setExtra(extra);
+        }
+
+        return stop;
     }
 }

@@ -21,7 +21,7 @@ import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
  * TODO: make it support multiple paths
  */
 
-public class RouteLoader {
+class RouteLoader {
     private static final String TAG = "RouteLoader";
     private static String PATH_ROOT = Environment.getExternalStorageDirectory().getPath();
     //private static String PATH_ROUTEDIR = PATH_ROOT + File.separator + "routes";
@@ -31,7 +31,7 @@ public class RouteLoader {
     private Handler mHandler;
     private FileObserver mObserver;
 
-    public RouteLoader(final Context context, final Route route) {
+    RouteLoader(final Context context, final Route route) {
         mContext = context;
         mRoute = route;
         mHandler = new Handler(Looper.getMainLooper());

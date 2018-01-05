@@ -1,7 +1,6 @@
 package com.tomtom.deliveryroute.widget;
 
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -34,7 +33,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
                 AppWidgetManager.INVALID_APPWIDGET_ID);
         mApplication = application;
 
-        mApplication.getRoute().registerObserver(new DataSetObserver() {
+        DeliveryApplication.getRoute().registerObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 Log.d(TAG, "> onChanged");
@@ -52,7 +51,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getCount() {
-        int size = mApplication.getRoute().size();
+        int size = DeliveryApplication.getRoute().size();
         Log.d(TAG, "getCount() => " + size);
         return size;
     }
@@ -75,7 +74,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
     public RemoteViews getViewAt(int position) {
         final RemoteViews remoteView = new RemoteViews(
                 mContext.getPackageName(), R.layout.list_row);
-        RouteStop stop = mApplication.getRoute().getStop(position);
+        RouteStop stop = DeliveryApplication.getRoute().getStop(position);
         boolean formatUS = mApplication.getFormatUS();
         Log.d(TAG, "> getViewAt(" + position + ")");
 
@@ -84,7 +83,7 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
         remoteView.setOnClickFillInIntent(R.id.row_container, fillInIntent);
 
         int textColor = Color.LTGRAY;
-        if (position == mApplication.getRoute().getCurrentStopIndex()) {
+        if (position == DeliveryApplication.getRoute().getCurrentStopIndex()) {
             // current stop has to be highlighted
             textColor = Color.GREEN;
         } else if (stop.isDone()) {

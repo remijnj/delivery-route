@@ -24,6 +24,5 @@ public class ListWidgetService extends RemoteViewsService {
 
         return (new ListViewFactory((DeliveryApplication) getApplication(), this.getApplicationContext(), intent));
     }
-
 }
 

@@ -21,13 +21,10 @@ import com.tomtom.deliveryroute.RouteStop;
 
 import static com.tomtom.deliveryroute.RouteService.ROUTESTOP;
 
-
 /**
  * StopFragment shows a stop.
  * It contains a "done" checkbox and a Drive button which sets this stop as the current stop
  * and plans a route there.
- * Use the {@link StopFragment#newStopFragment} factory method to
- * create an instance of this fragment.
  */
 public class StopFragment extends Fragment {
     public static final java.lang.String ROUTESTOP_ID = "ROUTESTOP_ID";
@@ -42,32 +39,17 @@ public class StopFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param routestop_id The id of the stop.
-     * @return A new instance of fragment StopFragment.
-     */
-    public static StopFragment newStopFragment(int routestop_id) {
-        StopFragment fragment = new StopFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ROUTESTOP_ID, routestop_id);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mApplication = (DeliveryApplication) getActivity().getApplication();
         if (getArguments() != null) {
-            mStopId = getArguments().getInt(ROUTESTOP_ID, mApplication.getRoute().getCurrentStopIndex());
+            mStopId = getArguments().getInt(ROUTESTOP_ID, DeliveryApplication.getRoute().getCurrentStopIndex());
         } else {
-            mStopId = mApplication.getRoute().getCurrentStopIndex();
+            mStopId = DeliveryApplication.getRoute().getCurrentStopIndex();
         }
-        mStop = mApplication.getRoute().getStop(mStopId);
-        mIsCurrentDestination = mApplication.getRoute().getCurrentStopIndex() == mStopId;
+        mStop = DeliveryApplication.getRoute().getStop(mStopId);
+        mIsCurrentDestination = DeliveryApplication.getRoute().getCurrentStopIndex() == mStopId;
     }
 
     @Override
@@ -81,7 +63,7 @@ public class StopFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // set the current stop to be this one
-                mApplication.getRoute().goToIndex(mStopId);
+                DeliveryApplication.getRoute().goToIndex(mStopId);
                 mIsCurrentDestination = true;
 
                 // plan the route
@@ -102,8 +84,8 @@ public class StopFragment extends Fragment {
                 // Go to previous stop
                 if (mStopId > 0) {
                     mStopId--;
-                    mStop = mApplication.getRoute().getStop(mStopId);
-                    mIsCurrentDestination = (mApplication.getRoute().getCurrentStopIndex() == mStopId);
+                    mStop = DeliveryApplication.getRoute().getStop(mStopId);
+                    mIsCurrentDestination = (DeliveryApplication.getRoute().getCurrentStopIndex() == mStopId);
                 } else {
                     Log.w(TAG, "not going to previous stop, we are already on first");
                 }
@@ -120,10 +102,10 @@ public class StopFragment extends Fragment {
                 Log.d(TAG, "pressed next");
 
                 // Go to next stop
-                if (mStopId + 1 < mApplication.getRoute().size()) {
+                if (mStopId + 1 < DeliveryApplication.getRoute().size()) {
                     mStopId++;
-                    mStop = mApplication.getRoute().getStop(mStopId);
-                    mIsCurrentDestination = (mApplication.getRoute().getCurrentStopIndex() == mStopId);
+                    mStop = DeliveryApplication.getRoute().getStop(mStopId);
+                    mIsCurrentDestination = (DeliveryApplication.getRoute().getCurrentStopIndex() == mStopId);
                 } else {
                     Log.w(TAG, "not going to next stop, we are already on last");
                 }
@@ -137,7 +119,7 @@ public class StopFragment extends Fragment {
         checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mApplication.getRoute().setStopDone(mStopId, checkbox.isChecked());
+                DeliveryApplication.getRoute().setStopDone(mStopId, checkbox.isChecked());
             }
         });
 
@@ -184,7 +166,7 @@ public class StopFragment extends Fragment {
 
         // only show the Next button when this is not the last stop
         AppCompatImageButton nextButton = (AppCompatImageButton) mRootView.findViewById(R.id.next_button);
-        if (mStopId == (mApplication.getRoute().size() - 1)) {
+        if (mStopId == (DeliveryApplication.getRoute().size() - 1)) {
             nextButton.setVisibility(View.INVISIBLE);
         } else {
             nextButton.setVisibility(View.VISIBLE);

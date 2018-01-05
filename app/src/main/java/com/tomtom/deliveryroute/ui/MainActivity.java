@@ -16,15 +16,12 @@ import com.tomtom.navapp.NavAppClient;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private DeliveryApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "> onCreate");
 
         super.onCreate(savedInstanceState);
-
-        mApplication = (DeliveryApplication) getApplication();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -97,16 +94,11 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void launchNavApp() {
-        Log.d(TAG, "> launchNavApp");
-        final Intent intent = new Intent(NavAppClient.ACTION_LAUNCH_NAVAPP);
-        startActivity(intent);
-        Log.d(TAG, "< launchNavApp");
-    }
-
     private void clearRoute() {
         // stop the route service
         Intent intent = new Intent(MainActivity.this, RouteService.class);
         stopService(intent);
+
+        DeliveryApplication.getRoute().clear();
     }
 }
