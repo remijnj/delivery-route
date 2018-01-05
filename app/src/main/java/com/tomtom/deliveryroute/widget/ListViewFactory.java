@@ -41,28 +41,14 @@ public class ListViewFactory implements RemoteViewsService.RemoteViewsFactory {
 
                 super.onChanged();
                 final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-                final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
 
-                // notify widget of changes in the listview (content)
-                widgetManager.notifyAppWidgetViewDataChanged(widgetManager.getAppWidgetIds(cn), R.id.listView);
-
-                updateAll(context);
+                // notify widget of changes in the listview
+                widgetManager.notifyAppWidgetViewDataChanged(mAppWidgetId, R.id.listView);
 
                 Log.d(TAG, "< onChanged");
             }
         });
     }
-
-    private static void updateAll(Context context) {
-        final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
-        final ComponentName cn = new ComponentName(context, ListWidgetProvider.class);
-
-        Intent intent = new Intent(context, ListWidgetProvider.class);
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetManager.getAppWidgetIds(cn));
-        context.sendBroadcast(intent);
-    }
-
 
     @Override
     public int getCount() {
