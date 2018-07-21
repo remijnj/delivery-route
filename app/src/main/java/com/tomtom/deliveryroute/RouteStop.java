@@ -67,7 +67,7 @@ public class RouteStop implements Serializable {
         mExtra = name;
     }
 
-    public String getExra() {
+    public String getExtra() {
         return mExtra;
     }
 
